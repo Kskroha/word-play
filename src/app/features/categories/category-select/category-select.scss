@@ -40,8 +40,9 @@
 }
 
 .category-list {
-  --category-gap: clamp(1.25rem, 3dvh, 1.75rem);
+  --category-gap: clamp(0.85rem, 2dvh, 1.25rem);
   --category-card-height: clamp(7.5rem, 20dvh, 10.5rem);
+  --category-title-only-height: clamp(3.25rem, 7.5dvh, 4rem);
   width: min(calc(100vw - 2rem), 52rem);
   display: flex;
   flex-direction: column;
@@ -210,6 +211,23 @@
   .category-choice__badge {
     border-color: #95d5b2;
     background: #f7fdf9;
+  }
+}
+
+.category-choice--title-only {
+  height: var(--category-title-only-height);
+  min-height: var(--category-title-only-height);
+  padding: clamp(0.75rem, 1.8dvh, 1rem) clamp(1rem, 2.5vw, 1.5rem);
+  border-color: #e0dce8;
+  color: #6b667d;
+  background: linear-gradient(180deg, #ffffff 0%, #faf9fc 100%);
+
+  .category-choice__title {
+    color: #6b667d;
+    font-size: clamp(0.95rem, 2.2dvh, 1.1rem);
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
   }
 }
 

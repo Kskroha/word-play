@@ -187,8 +187,10 @@ export class LetterOutlinePad {
 
   private updateScaledStrokes(): void {
     const strokes = getLetterStrokes(this.letter, this.alphabet);
-    this.scaledStrokes = strokes ? scaleLetterStrokes(strokes, this.width, this.height) : [];
-    this.brushSize = Math.max(getStrokeMaskLineWidth(Math.min(this.width, this.height)) * 0.72, 18);
+    this.scaledStrokes = strokes
+      ? scaleLetterStrokes(strokes, this.width, this.height, 0.1, 0.78)
+      : [];
+    this.brushSize = Math.max(getStrokeMaskLineWidth(Math.min(this.width, this.height)) * 1.08, 30);
   }
 
   private paintDot(x: number, y: number): void {

@@ -186,13 +186,15 @@
       </section>
     </div>
 
-    <button
-      mat-stroked-button
-      type="button"
-      class="play-skip"
-      (click)="nextTask()"
-    >
-      Пропустить
-    </button>
+    @if (answerStatus() !== 'correct') {
+      <button
+        mat-stroked-button
+        type="button"
+        class="play-skip"
+        (click)="nextTask()"
+      >
+        Пропустить
+      </button>
+    }
   </div>
 }

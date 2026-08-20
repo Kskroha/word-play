@@ -224,6 +224,7 @@ export function scaleLetterStrokes(
   width: number,
   height: number,
   paddingRatio = 0.16,
+  targetSizeRatio = 0.64,
 ): LetterStrokes {
   const points = strokes.flat();
   if (points.length === 0) {
@@ -241,8 +242,7 @@ export function scaleLetterStrokes(
 
   let scale = Math.min(innerWidth / rangeX, innerHeight / rangeY);
 
-  // Keep letter size close to the paint-letter game (~64% of the pad).
-  const targetSize = Math.min(width, height) * 0.64;
+  const targetSize = Math.min(width, height) * targetSizeRatio;
   const strokeSize = Math.max(rangeX, rangeY) * scale;
   if (strokeSize > targetSize) {
     scale = targetSize / Math.max(rangeX, rangeY);
@@ -302,7 +302,7 @@ export function getStrokeGuideLineWidth(canvasSize: number): number {
 }
 
 export function getStrokeMaskLineWidth(canvasSize: number): number {
-  return Math.max(canvasSize * 0.045, 12);
+  return Math.max(canvasSize * 0.052, 14);
 }
 
 export function getStrokeDashPattern(canvasSize: number): number[] {

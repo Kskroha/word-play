@@ -1,1 +1,36 @@
 @use '../../../features/trace-letter/trace-letter-play/trace-letter-play.scss';
+
+$outline-content-width: min(100%, 42rem);
+
+.play-header {
+  width: $outline-content-width;
+  max-width: $outline-content-width;
+}
+
+.trace-main {
+  width: $outline-content-width;
+  max-width: $outline-content-width;
+}
+
+.trace-pad-wrap {
+  width: 100%;
+}
+
+.trace-pad {
+  width: min(100%, 36rem);
+  aspect-ratio: 1 / 1;
+  max-height: min(64dvh, 36rem);
+}
+
+@media (max-width: 768px) {
+  .trace-pad {
+    width: 100%;
+    max-height: min(58dvh, 30rem);
+  }
+}
+
+@media (max-width: 768px) and (max-height: 700px) {
+  .trace-pad {
+    max-height: min(52dvh, 26rem);
+  }
+}

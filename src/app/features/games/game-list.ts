@@ -2,7 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
-import { getCategoryById, isCategoryId } from '../../core/data/categories';
+import { getCategoryById, isWordCategoryId } from '../../core/data/categories';
 import { GAME_DEFINITIONS } from '../../core/models/game-settings.model';
 import { GameSettingsService } from '../../core/services/game-settings.service';
 import { getGameImageUrl } from '../../core/utils/game-images';
@@ -27,7 +27,7 @@ export class GameList {
 
   readonly category = computed(() => {
     const id = this.categoryId();
-    return isCategoryId(id) ? getCategoryById(id) : undefined;
+    return isWordCategoryId(id) ? getCategoryById(id) : undefined;
   });
 
   readonly games = computed(() => {

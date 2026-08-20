@@ -1,0 +1,115 @@
+@if (!category()) {
+  <div class="play-page play-page--empty">
+    <p>Категория не найдена.</p>
+    <a mat-flat-button [routerLink]="['/categories']">К выбору категории</a>
+  </div>
+} @else if (isCompleted()) {
+  <div class="play-page play-page--completed">
+    <div class="completion-card">
+      <span class="completion-card__emoji" aria-hidden="true">🎉</span>
+      <h1 class="wp-display-title wp-display-title--md">Молодец!</h1>
+      <p class="wp-display-subtitle">Ты раскрасил все буквы алфавита!</p>
+      <div class="completion-card__actions">
+        <button mat-flat-button type="button" (click)="restartCategory()">
+          Пройти ещё раз
+        </button>
+        <a mat-stroked-button routerLink="/categories">К разделам</a>
+      </div>
+    </div>
+  </div>
+} @else if (currentRound(); as round) {
+  <div class="play-page">
+    <header class="play-header">
+      <button mat-stroked-button type="button" class="play-header__back" (click)="goBackToCategories()">
+        ← Назад
+      </button>
+
+      <div class="play-header__main">
+        <h1 class="play-header__category play-header__category--{{ category()!.id }}">
+          {{ category()!.title }}
+        </h1>
+        <div
+          class="play-header__progress-track"
+          role="progressbar"
+          [attr.aria-valuenow]="progressPercent()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="play-header__progress-fill" [style.width.%]="progressPercent()"></div>
+        </div>
+        <span class="play-header__progress-label">{{ progressLabel() }}</span>
+      </div>
+    </header>
+
+    <div class="trace-main">
+      <p class="trace-prompt">Закрась букву</p>
+
+      <div class="trace-pad-wrap">
+        <div
+          class="trace-pad"
+          [class.trace-pad--success]="roundComplete()"
+          aria-label="Область для раскрашивания буквы {{ round.letter }}"
+        >
+          <canvas #guideCanvas class="trace-pad__guide" aria-hidden="true"></canvas>
+          <canvas
+            #paintCanvas
+            class="trace-pad__paint"
+            [class.trace-pad__paint--locked]="roundComplete()"
+            (pointerdown)="onPointerDown($event)"
+            (pointermove)="onPointerMove($event)"
+            (pointerup)="onPointerUp($event)"
+            (pointercancel)="onPointerUp($event)"
+          ></canvas>
+        </div>
+      </div>
+
+      <div
+        class="trace-tools"
+        role="toolbar"
+        aria-label="Выбор цвета"
+        [class.trace-tools--locked]="roundComplete()"
+      >
+        @for (color of brushColors; track color.id) {
+          <button
+            type="button"
+            class="trace-color"
+            [class.trace-color--active]="selectedColorId() === color.id"
+            [style.--trace-color]="color.color"
+            [attr.aria-label]="color.label"
+            [attr.aria-pressed]="selectedColorId() === color.id"
+            [disabled]="roundComplete()"
+            (click)="selectColor(color.id)"
+          ></button>
+        }
+
+        <button
+          mat-stroked-button
+          type="button"
+          class="trace-clear"
+          (click)="clearPad()"
+          [disabled]="!hasPainted() || roundComplete()"
+        >
+          Стереть
+        </button>
+      </div>
+
+      <div class="trace-footer">
+        @if (roundComplete()) {
+          <p class="trace-footer__message" role="status">🌟 Здорово! Всё верно!</p>
+          <button
+            mat-flat-button
+            type="button"
+            class="trace-footer__next"
+            (click)="nextTask()"
+          >
+            Дальше →
+          </button>
+        }
+      </div>
+    </div>
+
+    <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
+      Пропустить
+    </button>
+  </div>
+}

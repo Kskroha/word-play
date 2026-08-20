@@ -1,7 +1,7 @@
 import { CategoryId } from '../models/category.model';
 import { PictureMode } from '../models/game-settings.model';
 
-const FISH_EMOTION_IMAGE_BASE = '/assets/images/emotions/fish';
+const FISH_EMOTION_IMAGE_BASE = 'assets/images/emotions/fish';
 
 export function getCategoryItemPictureUrl(
   categoryId: CategoryId,

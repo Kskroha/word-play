@@ -14,6 +14,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'categories/letters',
+    loadComponent: () =>
+      import('./features/trace-letter/trace-letter-play/trace-letter-play').then(
+        (m) => m.TraceLetterPlay,
+      ),
+  },
+  {
     path: 'categories/:categoryId',
     loadComponent: () =>
       import('./features/games/game-list').then((m) => m.GameList),

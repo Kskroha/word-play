@@ -1,6 +1,57 @@
 import { Category, CategoryId } from '../models/category.model';
 
+const CYRILLIC_LETTERS: { id: string; letter: string }[] = [
+  { id: 'a', letter: 'а' },
+  { id: 'b', letter: 'б' },
+  { id: 'v', letter: 'в' },
+  { id: 'g', letter: 'г' },
+  { id: 'd', letter: 'д' },
+  { id: 'e', letter: 'е' },
+  { id: 'yo', letter: 'ё' },
+  { id: 'zh', letter: 'ж' },
+  { id: 'z', letter: 'з' },
+  { id: 'i', letter: 'и' },
+  { id: 'y', letter: 'й' },
+  { id: 'k', letter: 'к' },
+  { id: 'l', letter: 'л' },
+  { id: 'm', letter: 'м' },
+  { id: 'n', letter: 'н' },
+  { id: 'o', letter: 'о' },
+  { id: 'p', letter: 'п' },
+  { id: 'r', letter: 'р' },
+  { id: 's', letter: 'с' },
+  { id: 't', letter: 'т' },
+  { id: 'u', letter: 'у' },
+  { id: 'f', letter: 'ф' },
+  { id: 'h', letter: 'х' },
+  { id: 'ts', letter: 'ц' },
+  { id: 'ch', letter: 'ч' },
+  { id: 'sh', letter: 'ш' },
+  { id: 'sch', letter: 'щ' },
+  { id: 'hard-sign', letter: 'ъ' },
+  { id: 'soft-y', letter: 'ы' },
+  { id: 'soft-sign', letter: 'ь' },
+  { id: 'ye', letter: 'э' },
+  { id: 'yu', letter: 'ю' },
+  { id: 'ya', letter: 'я' },
+];
+
 export const CATEGORIES: Category[] = [
+  {
+    id: 'letters',
+    title: 'Буквы',
+    description: 'Учимся раскрашивать буквы',
+    emoji: '🔤',
+    items: CYRILLIC_LETTERS.map(({ id, letter }) => {
+      const upper = letter.toLocaleUpperCase('ru-RU');
+      return {
+        id,
+        label: upper,
+        blocks: [upper],
+        imageEmoji: upper,
+      };
+    }),
+  },
   {
     id: 'emotions',
     title: 'Эмоции',
@@ -61,4 +112,16 @@ export function getCategoryById(id: CategoryId): Category | undefined {
 
 export function isCategoryId(value: string): value is CategoryId {
   return CATEGORIES.some((category) => category.id === value);
+}
+
+export function isWordCategoryId(value: string): value is Exclude<CategoryId, 'letters'> {
+  return isCategoryId(value) && value !== 'letters';
+}
+
+export function getCategoryRoute(categoryId: CategoryId): string[] {
+  if (categoryId === 'letters') {
+    return ['/categories', 'letters'];
+  }
+
+  return ['/categories', categoryId];
 }

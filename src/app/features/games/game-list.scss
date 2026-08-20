@@ -41,12 +41,12 @@
 
 .game-list {
   --game-gap: clamp(0.5rem, 1.5dvh, 0.85rem);
-  --game-grid-size: min(calc(100vw - 2rem), 38rem);
-  width: var(--game-grid-size);
-  height: var(--game-grid-size);
+  --game-cell-size: min(calc((100vw - 2rem - var(--game-gap)) / 2), 18rem);
+  width: min(100%, calc(var(--game-cell-size) * 2 + var(--game-gap)));
+  height: auto;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: var(--game-cell-size);
   gap: var(--game-gap);
   margin: 0 auto;
   padding: 0.35rem 0 0.85rem;

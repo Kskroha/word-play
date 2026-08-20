@@ -48,7 +48,7 @@ export const GAME_DEFINITIONS: GameDefinition[] = [
   },
 ];
 
-export const CURRENT_SETTINGS_VERSION = 2;
+export const CURRENT_SETTINGS_VERSION = 4;
 
 export const DEFAULT_GAME_SETTINGS: GameSettings = {
   settingsVersion: CURRENT_SETTINGS_VERSION,

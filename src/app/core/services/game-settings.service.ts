@@ -54,7 +54,11 @@ export class GameSettingsService {
       const merged: GameSettings = { ...DEFAULT_GAME_SETTINGS, ...parsed };
 
       if ((merged.settingsVersion ?? 0) < CURRENT_SETTINGS_VERSION) {
-        const enabled = new Set(merged.enabledGames);
+        const enabled = new Set(
+          merged.enabledGames.filter((gameId) =>
+            DEFAULT_GAME_SETTINGS.enabledGames.includes(gameId as GameId),
+          ),
+        );
         for (const gameId of DEFAULT_GAME_SETTINGS.enabledGames) {
           enabled.add(gameId);
         }

@@ -3,19 +3,27 @@
     @for (category of categories; track category.id) {
       <a
         class="category-choice category-choice--{{ category.id }}"
-        [routerLink]="['/categories', category.id]"
+        [routerLink]="categoryRoute(category.id)"
       >
         <span class="category-choice__badge">
           <span class="category-choice__title">{{ category.title }}</span>
         </span>
         <div class="category-choice__art">
-          <img
-            class="category-choice__image"
-            [src]="categoryImageUrl(category.id)"
-            [alt]="category.title"
-            loading="lazy"
-            decoding="async"
-          />
+          @if (categoryImageUrl(category.id); as imageUrl) {
+            <img
+              class="category-choice__image"
+              [src]="imageUrl"
+              [alt]="category.title"
+              loading="lazy"
+              decoding="async"
+            />
+          } @else {
+            <div class="category-choice__placeholder" aria-hidden="true">
+              <span class="category-choice__sample-letter">А</span>
+              <span class="category-choice__sample-letter">Б</span>
+              <span class="category-choice__sample-letter">В</span>
+            </div>
+          }
         </div>
       </a>
     }

@@ -1,4 +1,4 @@
-export type CategoryId = 'emotions' | 'numbers' | 'sea-creatures';
+export type CategoryId = 'letters' | 'emotions' | 'numbers' | 'sea-creatures';
 
 export interface CategoryItem {
   id: string;

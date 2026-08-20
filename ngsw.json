@@ -1,0 +1,153 @@
+{
+  "configVersion": 1,
+  "timestamp": 1787222355757,
+  "index": "/word-play/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/word-play/chunk-3Zk2QIz2.js",
+        "/word-play/chunk-B7hwHGs8.js",
+        "/word-play/chunk-B8E2bd1O.js",
+        "/word-play/chunk-BDibTqMB.js",
+        "/word-play/chunk-BPqL-c0L.js",
+        "/word-play/chunk-BZzh7xJg.js",
+        "/word-play/chunk-BeVKsTwG.js",
+        "/word-play/chunk-Btge7PHE.js",
+        "/word-play/chunk-CG3bfeuX.js",
+        "/word-play/chunk-CcRklajr.js",
+        "/word-play/chunk-CocdvJ-9.js",
+        "/word-play/chunk-DNKI22bX.js",
+        "/word-play/chunk-DSwi2olm.js",
+        "/word-play/chunk-DgadF6wY.js",
+        "/word-play/chunk-Izr0CuLX.js",
+        "/word-play/chunk-fb4zpsZl.js",
+        "/word-play/chunk-k1VHmN74.js",
+        "/word-play/chunk-uT9uXH3p.js",
+        "/word-play/favicon.ico",
+        "/word-play/favicon.png",
+        "/word-play/icons/apple-touch-icon.png",
+        "/word-play/icons/icon-128x128.png",
+        "/word-play/icons/icon-144x144.png",
+        "/word-play/icons/icon-152x152.png",
+        "/word-play/icons/icon-180x180.png",
+        "/word-play/icons/icon-192x192.png",
+        "/word-play/icons/icon-384x384.png",
+        "/word-play/icons/icon-512x512.png",
+        "/word-play/icons/icon-72x72.png",
+        "/word-play/icons/icon-96x96.png",
+        "/word-play/index.html",
+        "/word-play/main-5SYBJ6TZ.js",
+        "/word-play/manifest.webmanifest",
+        "/word-play/styles-QZCKVAKT.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/word-play/assets/images/categories/digits.png",
+        "/word-play/assets/images/categories/emotions.png",
+        "/word-play/assets/images/categories/sea.png",
+        "/word-play/assets/images/emotions/fish/f_afraid.jpg",
+        "/word-play/assets/images/emotions/fish/f_angry.jpg",
+        "/word-play/assets/images/emotions/fish/f_ashamed.jpg",
+        "/word-play/assets/images/emotions/fish/f_bored.jpg",
+        "/word-play/assets/images/emotions/fish/f_delighted.jpg",
+        "/word-play/assets/images/emotions/fish/f_happy.jpg",
+        "/word-play/assets/images/emotions/fish/f_proud.jpg",
+        "/word-play/assets/images/emotions/fish/f_sad.jpg",
+        "/word-play/assets/images/emotions/fish/f_surprised.jpg",
+        "/word-play/assets/images/emotions/fish/f_thinking.jpg",
+        "/word-play/assets/images/games/build-word.png",
+        "/word-play/assets/images/games/picture-choice.png",
+        "/word-play/assets/images/games/true-false.png",
+        "/word-play/assets/images/games/type-word.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/word-play/assets/images/categories/digits.png": "0660c3c8b5067853e908aa7673807155cda7aa52",
+    "/word-play/assets/images/categories/emotions.png": "290e570709689a65db9c223d5eaf8601665d18fc",
+    "/word-play/assets/images/categories/sea.png": "eb02bed31849a77b7dc5c66d77f2192061fff1c6",
+    "/word-play/assets/images/emotions/fish/f_afraid.jpg": "25dbd2b9513ef767f6711dc5c246014b1f0301af",
+    "/word-play/assets/images/emotions/fish/f_angry.jpg": "aca6c26f402b6c7a6f57c0f67d11fade884426f6",
+    "/word-play/assets/images/emotions/fish/f_ashamed.jpg": "0b39391d0f5635567a7f18ebf88b8f20fd9f2dc3",
+    "/word-play/assets/images/emotions/fish/f_bored.jpg": "b8397cae206d2d267a4ae7b16b1778c2fe0b213e",
+    "/word-play/assets/images/emotions/fish/f_delighted.jpg": "c7898829b1974de31748f2ab98252275a1f9f1af",
+    "/word-play/assets/images/emotions/fish/f_happy.jpg": "8f3ebf5dfc2d14ff40d3d2a8fc052955e0b92ff5",
+    "/word-play/assets/images/emotions/fish/f_proud.jpg": "143d342d4bd82b28ee7d674d8dad45c3db838b73",
+    "/word-play/assets/images/emotions/fish/f_sad.jpg": "1b8c9118fa0cf21b0f5a7d686f6cc3f5f4d44422",
+    "/word-play/assets/images/emotions/fish/f_surprised.jpg": "589b3d895a5e6dc126c792a6508c46c0df0eec84",
+    "/word-play/assets/images/emotions/fish/f_thinking.jpg": "102f3c9ea3a3e6eb816a49463eb2b738295e1323",
+    "/word-play/assets/images/games/build-word.png": "51c4b48621febbbeffccf1e02760e36bfa766536",
+    "/word-play/assets/images/games/picture-choice.png": "b7d29b02a9ccec18525155d55df4a36b5a016c8d",
+    "/word-play/assets/images/games/true-false.png": "cd69cc462ba740c1579bf13e33e006a8df8747af",
+    "/word-play/assets/images/games/type-word.png": "0c9359e6577b0d8dd5ff4f82b5df7457c8d77e1a",
+    "/word-play/chunk-3Zk2QIz2.js": "a525eb3ab74c376ff836f1a7d8db1a0305a01619",
+    "/word-play/chunk-B7hwHGs8.js": "c1de0552308ad5c5efe3de618c25cd6086c125f5",
+    "/word-play/chunk-B8E2bd1O.js": "a48b191fcd6137f06aceb7014fe19f69286c053a",
+    "/word-play/chunk-BDibTqMB.js": "8d06138a4ae0384fcea8d5d0ec295771f0f7d578",
+    "/word-play/chunk-BPqL-c0L.js": "4413432a5c9422e6ef1f18246d3e34736c0ebd0d",
+    "/word-play/chunk-BZzh7xJg.js": "a9e906147e486faad8ec47af5bf9a99bc31624a2",
+    "/word-play/chunk-BeVKsTwG.js": "eff98bf33949211bd184c6b391b3d475f50bb811",
+    "/word-play/chunk-Btge7PHE.js": "71832a20f27fe0657488af6e42dd9a9f3d1526f6",
+    "/word-play/chunk-CG3bfeuX.js": "2fa17eeff663d2037fdbc523577210826bcc75cf",
+    "/word-play/chunk-CcRklajr.js": "f7d73ae29156434b883a4761ec62a8117cd14f1c",
+    "/word-play/chunk-CocdvJ-9.js": "823df881ad6ce4382a7b53e688f7bd422e0f7acd",
+    "/word-play/chunk-DNKI22bX.js": "8a7ba89a130e07e7a296409cf544c985a1a37737",
+    "/word-play/chunk-DSwi2olm.js": "1128ffecee18f355e59e10e1677a228761fb05f9",
+    "/word-play/chunk-DgadF6wY.js": "143a89377ed3bbe89af69a1115f77a1dad12dedf",
+    "/word-play/chunk-Izr0CuLX.js": "4ead7897dab4ef57840fb3e2f3e6cd69307687f1",
+    "/word-play/chunk-fb4zpsZl.js": "7b27ea46e4f25811f6bf041a07300da2eb04bce7",
+    "/word-play/chunk-k1VHmN74.js": "c56efb832a8574894536ab3ecccbd44662e71fef",
+    "/word-play/chunk-uT9uXH3p.js": "9d88c9bd36349ae921797643a41dbb118b22adae",
+    "/word-play/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/word-play/favicon.png": "480c9cfa8b079573fd5a003e020b7982e633e007",
+    "/word-play/icons/apple-touch-icon.png": "3277c42223797fe99d8c973df999b7c48807f75c",
+    "/word-play/icons/icon-128x128.png": "f4b168740973b9e2157855bb8388b717c6ad93b9",
+    "/word-play/icons/icon-144x144.png": "9693fed121b0fea380e7f09dcbfce1b2a4131a74",
+    "/word-play/icons/icon-152x152.png": "a9387a56d2e8d2fa41a351beffe3dcf1b8281c34",
+    "/word-play/icons/icon-180x180.png": "3277c42223797fe99d8c973df999b7c48807f75c",
+    "/word-play/icons/icon-192x192.png": "0b6f648933f6c40e55da512ae7c7e188d682fa57",
+    "/word-play/icons/icon-384x384.png": "4f8db71d07a8104ebf57029f86adc066bdc2921f",
+    "/word-play/icons/icon-512x512.png": "f366d8a25eb39d9c7fde98fafeef40affda789e6",
+    "/word-play/icons/icon-72x72.png": "b60884f962f0a75890c3ab8d7501ae98c2cb5887",
+    "/word-play/icons/icon-96x96.png": "a5ef658800dcda9124bd90d367656f2dc2904394",
+    "/word-play/index.html": "0109da290b800ff602f044b34a097fd65a3fb6ff",
+    "/word-play/main-5SYBJ6TZ.js": "c3a16bb14d8405b6d8a4ed42f518d21ce35ce6ec",
+    "/word-play/manifest.webmanifest": "4ed16e3aeadbf78360148c6129c3f6a971085f02",
+    "/word-play/styles-QZCKVAKT.css": "b5a84fb1ff53cd96f8e4fdb0c4b2eb05f9b0ae63"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

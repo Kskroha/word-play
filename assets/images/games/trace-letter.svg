@@ -1,17 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label=" 0A:@0AL 1C:2C">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="Закрась букву">
   <defs>
-    <linearGradient id="pad-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="paint-pad-bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#fff8f0"/>
       <stop offset="50%" stop-color="#fff4f8"/>
       <stop offset="100%" stop-color="#eef8fd"/>
     </linearGradient>
+    <mask id="paint-letter-mask">
+      <path d="M116 226 L160 94 L204 226" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M133 178 H187" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round"/>
+    </mask>
   </defs>
-  <rect x="24" y="24" width="272" height="272" rx="36" fill="url(#pad-bg)" stroke="#cbbfe0" stroke-width="4" stroke-dasharray="12 8"/>
-  <g stroke="#d9c9ef" stroke-width="1.5" opacity="0.55">
-    <path d="M64 64v192M96 64v192M128 64v192M160 64v192M192 64v192M224 64v192M256 64v192"/>
-    <path d="M64 64h192M64 96h192M64 128h192M64 160h192M64 192h192M64 224h192M64 256h192"/>
+  <rect x="24" y="24" width="272" height="272" rx="36" fill="url(#paint-pad-bg)" stroke="#cbbfe0" stroke-width="4" stroke-dasharray="12 8"/>
+  <g mask="url(#paint-letter-mask)">
+    <rect x="24" y="24" width="272" height="272" fill="#f0e8fb"/>
+    <g stroke="#c3a2e6" stroke-width="34" stroke-linecap="round">
+      <path d="M136 112 H188"/>
+      <path d="M122 148 H202"/>
+      <path d="M110 184 H212"/>
+      <path d="M102 216 H150"/>
+    </g>
   </g>
-  <text x="160" y="188" text-anchor="middle" font-family="Nunito, Segoe UI, sans-serif" font-size="132" font-weight="800" fill="rgba(245,168,200,0.45)" stroke="#9b7fd4" stroke-width="5" stroke-dasharray="14 9"></text>
+  <g fill="none" stroke="#9b7fd4" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="13 9" opacity="0.6">
+    <path d="M116 226 L160 94 L204 226" stroke-linejoin="round"/>
+    <path d="M133 178 H187"/>
+  </g>
   <circle cx="248" cy="248" r="34" fill="#f5a8c8" stroke="#fff" stroke-width="4"/>
   <path d="M232 248c8-10 18-10 26 0" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
 </svg>

@@ -11,6 +11,13 @@
   margin: 0 auto;
   min-height: 0;
   overflow: hidden;
+  align-items: center;
+}
+
+.play-picture {
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
 }
 
 .type-workspace {
@@ -20,6 +27,7 @@
   justify-content: center;
   gap: var(--play-block-gap);
   min-height: 0;
+  height: 100%;
   padding: 0.25rem;
 }
 
@@ -90,10 +98,22 @@
   .play-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(0, 1fr);
+    align-items: stretch;
   }
 
   .play-page {
     --play-visual-height: min(calc(100dvh - 20rem), 280px);
+  }
+
+  .play-picture {
+    height: auto;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .type-workspace {
+    height: auto;
+    justify-content: center;
   }
 }
 

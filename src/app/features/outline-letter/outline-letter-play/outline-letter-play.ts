@@ -37,7 +37,6 @@ export class OutlineLetterPlay implements OnDestroy {
   private padCanvas: HTMLCanvasElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private isPointerActive = false;
-  private successCheckQueued = false;
 
   readonly brushColors = TRACE_BRUSH_COLORS;
   readonly alphabetOptions = LETTER_ALPHABET_OPTIONS;
@@ -174,7 +173,6 @@ export class OutlineLetterPlay implements OnDestroy {
     this.paintCanvasRef()?.nativeElement.setPointerCapture(event.pointerId);
     this.pad?.handlePointerDown(event.clientX, event.clientY);
     this.hasPainted.set(true);
-    this.scheduleSuccessCheck();
   }
 
   onPointerMove(event: PointerEvent): void {
@@ -183,8 +181,10 @@ export class OutlineLetterPlay implements OnDestroy {
     }
 
     event.preventDefault();
-    this.pad?.handlePointerMove(event.clientX, event.clientY);
-    this.scheduleSuccessCheck();
+    const events = event.getCoalescedEvents?.() ?? [event];
+    for (const moveEvent of events) {
+      this.pad?.handlePointerMove(moveEvent.clientX, moveEvent.clientY);
+    }
   }
 
   onPointerUp(event: PointerEvent): void {
@@ -200,7 +200,7 @@ export class OutlineLetterPlay implements OnDestroy {
     }
 
     this.pad?.handlePointerUp();
-    this.scheduleSuccessCheck(true);
+    this.checkRoundSuccess();
   }
 
   clearPad(): void {
@@ -259,30 +259,8 @@ export class OutlineLetterPlay implements OnDestroy {
     }
   }
 
-  private scheduleSuccessCheck(immediate = false): void {
-    if (this.roundComplete()) {
-      return;
-    }
-
-    if (immediate) {
-      this.successCheckQueued = false;
-      this.checkRoundSuccess();
-      return;
-    }
-
-    if (this.successCheckQueued) {
-      return;
-    }
-
-    this.successCheckQueued = true;
-    requestAnimationFrame(() => {
-      this.successCheckQueued = false;
-      this.checkRoundSuccess();
-    });
-  }
-
   private checkRoundSuccess(): void {
-    if (this.roundComplete() || !this.pad?.isRoundSuccessful()) {
+    if (this.roundComplete() || this.isPointerActive || !this.pad?.isRoundSuccessful()) {
       return;
     }
 

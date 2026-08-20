@@ -13,8 +13,13 @@ import {
   TRACE_BRUSH_COLORS,
 } from './letter-trace';
 
-const OUTLINE_FADE_STEP = 0.28;
-const GUIDE_FADE_ALPHA_THRESHOLD = 150;
+const OUTLINE_FADE_STEP = 0.22;
+const GUIDE_FADE_ALPHA_THRESHOLD = 68;
+const GUIDE_FADE_SAMPLE_STRIDE = 4;
+
+function createDrawingContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
+  return canvas.getContext('2d', { desynchronized: true })!;
+}
 
 export class LetterOutlinePad {
   private readonly guideCtx: CanvasRenderingContext2D;
@@ -33,6 +38,7 @@ export class LetterOutlinePad {
   private scaledStrokes: LetterStrokes = [];
   private isDrawing = false;
   private celebrating = false;
+  private guideRedrawQueued = false;
   private lastX = 0;
   private lastY = 0;
 
@@ -44,14 +50,14 @@ export class LetterOutlinePad {
     private readonly guideCanvas: HTMLCanvasElement,
     private readonly paintCanvas: HTMLCanvasElement,
   ) {
-    this.guideCtx = guideCanvas.getContext('2d')!;
-    this.paintCtx = paintCanvas.getContext('2d')!;
+    this.guideCtx = createDrawingContext(guideCanvas);
+    this.paintCtx = createDrawingContext(paintCanvas);
     this.outlineCanvas = document.createElement('canvas');
-    this.outlineCtx = this.outlineCanvas.getContext('2d')!;
+    this.outlineCtx = createDrawingContext(this.outlineCanvas);
     this.outlineGuideCanvas = document.createElement('canvas');
-    this.outlineGuideCtx = this.outlineGuideCanvas.getContext('2d')!;
+    this.outlineGuideCtx = createDrawingContext(this.outlineGuideCanvas);
     this.outlineEraseCanvas = document.createElement('canvas');
-    this.outlineEraseCtx = this.outlineEraseCanvas.getContext('2d')!;
+    this.outlineEraseCtx = createDrawingContext(this.outlineEraseCanvas);
   }
 
   resize(): void {
@@ -131,6 +137,7 @@ export class LetterOutlinePad {
 
   setCelebrating(value: boolean): void {
     this.celebrating = value;
+    this.guideRedrawQueued = false;
     this.redrawGuide();
   }
 
@@ -139,6 +146,7 @@ export class LetterOutlinePad {
     this.outlineEraseCtx.clearRect(0, 0, this.width, this.height);
     if (redrawGuide) {
       this.celebrating = false;
+      this.guideRedrawQueued = false;
       this.redrawGuide();
     }
   }
@@ -149,8 +157,9 @@ export class LetterOutlinePad {
 
     let guidePixels = 0;
     let fadedPixels = 0;
+    const stride = GUIDE_FADE_SAMPLE_STRIDE * 4;
 
-    for (let index = 3; index < guideData.length; index += 4) {
+    for (let index = 3; index < guideData.length; index += stride) {
       if (guideData[index]! <= 16) {
         continue;
       }
@@ -186,13 +195,13 @@ export class LetterOutlinePad {
     }
 
     const point = this.getCanvasPoint(clientX, clientY);
-    this.paintLine(this.lastX, this.lastY, point.x, point.y);
-    this.lastX = point.x;
-    this.lastY = point.y;
+    this.paintStrokeTo(point.x, point.y);
   }
 
   handlePointerUp(): void {
     this.isDrawing = false;
+    this.guideRedrawQueued = false;
+    this.redrawGuide();
   }
 
   private getCanvasPoint(clientX: number, clientY: number): { x: number; y: number } {
@@ -211,7 +220,39 @@ export class LetterOutlinePad {
     this.scaledStrokes = strokes
       ? scaleLetterStrokes(strokes, this.width, this.height, 0.1, 0.78)
       : [];
-    this.brushSize = Math.max(getStrokeMaskLineWidth(Math.min(this.width, this.height)) * 1.08, 30);
+
+    const canvasSize = Math.min(this.width, this.height);
+    this.brushSize = Math.max(getStrokeMaskLineWidth(canvasSize) * 1.85, 56);
+  }
+
+  private paintStrokeTo(x: number, y: number): void {
+    const dx = x - this.lastX;
+    const dy = y - this.lastY;
+    const distance = Math.hypot(dx, dy);
+    const step = Math.max(this.brushSize * 0.22, 2);
+
+    if (distance <= step) {
+      this.paintSegment(this.lastX, this.lastY, x, y);
+      this.lastX = x;
+      this.lastY = y;
+      return;
+    }
+
+    const steps = Math.ceil(distance / step);
+    let prevX = this.lastX;
+    let prevY = this.lastY;
+
+    for (let index = 1; index <= steps; index += 1) {
+      const t = index / steps;
+      const nextX = this.lastX + dx * t;
+      const nextY = this.lastY + dy * t;
+      this.paintSegment(prevX, prevY, nextX, nextY);
+      prevX = nextX;
+      prevY = nextY;
+    }
+
+    this.lastX = x;
+    this.lastY = y;
   }
 
   private paintDot(x: number, y: number): void {
@@ -221,9 +262,15 @@ export class LetterOutlinePad {
     this.paintCtx.fill();
     this.applyOutlineMask();
     this.fadeOutlineDot(x, y);
+    this.guideRedrawQueued = false;
+    this.redrawGuide();
   }
 
-  private paintLine(x1: number, y1: number, x2: number, y2: number): void {
+  private paintSegment(x1: number, y1: number, x2: number, y2: number): void {
+    if (x1 === x2 && y1 === y2) {
+      return;
+    }
+
     this.paintCtx.strokeStyle = this.brushColor;
     this.paintCtx.lineWidth = this.brushSize;
     this.paintCtx.lineCap = 'round';
@@ -233,7 +280,8 @@ export class LetterOutlinePad {
     this.paintCtx.lineTo(x2, y2);
     this.paintCtx.stroke();
     this.applyOutlineMask();
-    this.fadeOutlineLine(x1, y1, x2, y2);
+    this.fadeOutlineSegment(x1, y1, x2, y2);
+    this.scheduleGuideRedraw();
   }
 
   private applyOutlineMask(): void {
@@ -251,10 +299,9 @@ export class LetterOutlinePad {
     this.outlineEraseCtx.globalCompositeOperation = 'destination-in';
     this.outlineEraseCtx.drawImage(this.outlineCanvas, 0, 0);
     this.outlineEraseCtx.restore();
-    this.redrawGuide();
   }
 
-  private fadeOutlineLine(x1: number, y1: number, x2: number, y2: number): void {
+  private fadeOutlineSegment(x1: number, y1: number, x2: number, y2: number): void {
     this.outlineEraseCtx.save();
     this.outlineEraseCtx.strokeStyle = `rgba(255, 255, 255, ${OUTLINE_FADE_STEP})`;
     this.outlineEraseCtx.lineWidth = this.brushSize;
@@ -267,7 +314,21 @@ export class LetterOutlinePad {
     this.outlineEraseCtx.globalCompositeOperation = 'destination-in';
     this.outlineEraseCtx.drawImage(this.outlineCanvas, 0, 0);
     this.outlineEraseCtx.restore();
-    this.redrawGuide();
+  }
+
+  private scheduleGuideRedraw(): void {
+    if (this.guideRedrawQueued) {
+      return;
+    }
+
+    this.guideRedrawQueued = true;
+    requestAnimationFrame(() => {
+      this.guideRedrawQueued = false;
+      if (!this.isDrawing) {
+        return;
+      }
+      this.redrawGuide();
+    });
   }
 
   private redrawGuide(): void {

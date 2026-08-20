@@ -1,0 +1,27 @@
+.page-shell {
+  min-height: 100dvh;
+  padding: 1.25rem 1rem 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.back-link {
+  margin-bottom: 0.75rem;
+  border: var(--wp-dashed) !important;
+  border-radius: 999px !important;
+  background: var(--wp-surface) !important;
+  color: var(--wp-heading) !important;
+}
+
+.page-shell__header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+  padding: 0.5rem 1rem 0;
+  background: transparent;
+}
+
+.page-shell__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

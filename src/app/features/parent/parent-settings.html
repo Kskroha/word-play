@@ -1,0 +1,109 @@
+<app-page-shell
+  title="Настройки для родителя"
+  subtitle="Управляй сложностью и доступными играми"
+>
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>Сложность и ограничения</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="settings-card__content">
+      <mat-form-field appearance="outline" class="settings-field">
+        <mat-label>Уровень сложности</mat-label>
+        <mat-select
+          [ngModel]="settings().difficulty"
+          (ngModelChange)="updateDifficulty($event)"
+        >
+          @for (option of difficultyOptions; track option) {
+            <mat-option [value]="option">{{ difficultyLabels[option] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="settings-field">
+        <mat-label>Вариантов ответа</mat-label>
+        <mat-select
+          [ngModel]="settings().maxAnswerChoices"
+          (ngModelChange)="updateMaxAnswerChoices($event)"
+        >
+          @for (option of answerChoiceOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="settings-field">
+        <mat-label>Время сессии</mat-label>
+        <mat-select
+          [ngModel]="settings().sessionTimeLimitMinutes"
+          (ngModelChange)="updateSessionLimit($event)"
+        >
+          @for (option of sessionLimitOptions; track option ?? 'none') {
+            <mat-option [value]="option">{{ sessionLimitLabel(option) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>Доступные игры</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="settings-card__content">
+      @for (game of games; track game.id) {
+        <div class="toggle-row">
+          <div class="toggle-row__info">
+            <div>
+              <strong>{{ game.title }}</strong>
+              <p>{{ game.description }}</p>
+            </div>
+          </div>
+
+          <mat-slide-toggle
+            [checked]="isGameEnabled(game.id)"
+            (change)="toggleGame(game.id, $event.checked)"
+            [attr.aria-label]="'Включить игру ' + game.title"
+          />
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>Звук и анимации</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="settings-card__content">
+      <div class="toggle-row">
+        <div>
+          <strong>Звук</strong>
+          <p>Озвучивание слов и подсказок</p>
+        </div>
+        <mat-slide-toggle
+          [checked]="settings().soundEnabled"
+          (change)="updateSoundEnabled($event.checked)"
+          aria-label="Включить звук"
+        />
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <strong>Анимации</strong>
+          <p>Плавные переходы между экранами</p>
+        </div>
+        <mat-slide-toggle
+          [checked]="settings().animationsEnabled"
+          (change)="updateAnimationsEnabled($event.checked)"
+          aria-label="Включить анимации"
+        />
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <button mat-stroked-button type="button" class="reset-button" (click)="resetSettings()">
+    Сбросить настройки
+  </button>
+</app-page-shell>

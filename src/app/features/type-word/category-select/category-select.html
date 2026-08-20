@@ -1,0 +1,14 @@
+<app-page-shell title="Напечатай слово" subtitle="Выбери категорию">
+  <div class="category-list">
+    @for (category of categories; track category.id) {
+      <a
+        class="category-choice category-choice--{{ category.id }}"
+        [routerLink]="['/games', 'type-word', 'play', category.id]"
+      >
+        <h2 class="category-choice__title">{{ category.title }}</h2>
+        <p class="category-choice__description">{{ category.description }}</p>
+        <span class="category-choice__count">{{ category.items.length }} заданий</span>
+      </a>
+    }
+  </div>
+</app-page-shell>

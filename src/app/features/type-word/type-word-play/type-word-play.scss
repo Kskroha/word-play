@@ -1,0 +1,105 @@
+@use '../../../shared/styles/play-shell';
+@use '../../../shared/styles/play-picture';
+
+.play-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, min(360px, 100%)) minmax(0, 1fr);
+  gap: clamp(0.75rem, 1.5dvh, 1.25rem);
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.type-workspace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--play-block-gap);
+  min-height: 0;
+  padding: 0.25rem;
+}
+
+.type-slots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  cursor: text;
+}
+
+.type-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--play-tile-size);
+  height: var(--play-tile-size);
+  border: 2.5px dashed var(--wp-border-dashed);
+  border-radius: var(--wp-radius-sm);
+  background: transparent;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.type-slot--active {
+  border-color: var(--wp-purple);
+  background: var(--wp-purple-soft);
+}
+
+.type-slot__letter {
+  font-size: var(--play-tile-font);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--wp-text);
+}
+
+.type-slot--right {
+  border-color: var(--wp-success);
+  background: linear-gradient(180deg, #f5fbf7 0%, var(--wp-success-soft) 100%);
+
+  .type-slot__letter {
+    color: #3d7a58;
+  }
+}
+
+.type-slot--wrong {
+  border-color: var(--wp-error);
+  background: linear-gradient(180deg, #fef8f8 0%, var(--wp-error-soft) 100%);
+
+  .type-slot__letter {
+    color: #a85858;
+  }
+}
+
+.type-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .play-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .play-page {
+    --play-visual-height: min(calc(100dvh - 20rem), 280px);
+  }
+}
+
+@media (max-height: 680px) {
+  .play-page {
+    --play-tile-size: 64px;
+    --play-tile-font: 2rem;
+  }
+}

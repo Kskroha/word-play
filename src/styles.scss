@@ -1,0 +1,187 @@
+// Include theming for Angular Material with `mat.theme()`.
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: (
+        plain-family: 'Nunito',
+        brand-family: 'Nunito',
+        bold-weight: 800,
+        medium-weight: 700,
+        regular-weight: 600,
+      ),
+      density: 0,
+    )
+  );
+}
+
+:root {
+  // Worksheet palette
+  --wp-purple: #8b6fc0;
+  --wp-purple-deep: #6b54a8;
+  --wp-purple-soft: #f3eef9;
+  --wp-pink: #f5a8c8;
+  --wp-pink-soft: #fff0f6;
+  --wp-sky: #8ecae6;
+  --wp-sky-soft: #eef8fd;
+  --wp-mint: #95d5b2;
+  --wp-mint-soft: #eefaf3;
+  --wp-peach: #ffc8a2;
+  --wp-peach-soft: #fff6ef;
+  --wp-yellow-soft: #fff9e6;
+  --wp-teal: #5ec4b6;
+  --wp-teal-soft: #eefaf8;
+
+  --wp-primary: var(--wp-purple);
+  --wp-primary-soft: var(--wp-purple-soft);
+  --wp-primary-deep: var(--wp-purple-deep);
+  --wp-secondary: var(--wp-sky);
+  --wp-secondary-soft: var(--wp-sky-soft);
+  --wp-accent: var(--wp-peach);
+  --wp-accent-soft: var(--wp-peach-soft);
+  --wp-lilac: #d4c4f0;
+  --wp-on-primary: #ffffff;
+  --wp-surface: #ffffff;
+  --wp-surface-tint: #faf8fc;
+  --wp-background: #ffffff;
+  --wp-heading: var(--wp-purple-deep);
+  --wp-title: #9b7fd4;
+  --wp-title-shadow: 0 3px 16px rgba(155, 127, 212, 0.22);
+  --wp-subtitle: #f0a0c0;
+  --wp-text: #4a4560;
+  --wp-text-muted: #8a849c;
+  --wp-border: #ddd5eb;
+  --wp-border-dashed: #cbbfe0;
+  --wp-success: #7bc89a;
+  --wp-success-soft: #edf8f1;
+  --wp-error: #e8a0a0;
+  --wp-error-soft: #fdf0f0;
+  --wp-radius-sm: 16px;
+  --wp-radius-md: 22px;
+  --wp-radius-lg: 28px;
+  --wp-radius-xl: 36px;
+  --wp-shadow: 0 8px 24px rgba(139, 111, 192, 0.1);
+  --wp-shadow-soft: 0 4px 14px rgba(139, 111, 192, 0.07);
+  --wp-font: 'Nunito', 'Segoe UI', sans-serif;
+  --wp-dashed: 2.5px dashed var(--wp-border-dashed);
+}
+
+body {
+  color-scheme: light;
+  background-color: #ffffff;
+  color: var(--wp-text);
+  font-family: var(--wp-font);
+  font-weight: 600;
+  margin: 0;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--wp-font);
+  letter-spacing: 0.01em;
+}
+
+.wp-display-title {
+  margin: 0;
+  font-size: clamp(2.25rem, 6.5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--wp-title);
+  text-shadow: var(--wp-title-shadow);
+}
+
+.wp-display-title--md {
+  font-size: clamp(1.85rem, 4.5vw, 2.35rem);
+}
+
+.wp-display-subtitle {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.15rem, 3.2vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--wp-subtitle);
+}
+
+button,
+a[mat-flat-button],
+a[mat-stroked-button],
+a[mat-button] {
+  touch-action: manipulation;
+  font-family: var(--wp-font) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em;
+}
+
+// Worksheet-style card
+.mat-mdc-card {
+  border: var(--wp-dashed) !important;
+  border-radius: var(--wp-radius-lg) !important;
+  background: var(--wp-surface) !important;
+  box-shadow: none !important;
+}
+
+.mat-mdc-unelevated-button:not(:disabled),
+.mat-mdc-raised-button:not(:disabled) {
+  border-radius: 999px !important;
+  background: var(--wp-purple) !important;
+  box-shadow: var(--wp-shadow-soft) !important;
+}
+
+.mat-mdc-outlined-button:not(:disabled) {
+  border-radius: 999px !important;
+  border: var(--wp-dashed) !important;
+  color: var(--wp-heading) !important;
+}
+
+.mat-mdc-button:not(:disabled) {
+  border-radius: 999px !important;
+}
+
+.mat-mdc-chip {
+  border-radius: 999px !important;
+  border: 2px dashed var(--wp-border-dashed) !important;
+  background: var(--wp-purple-soft) !important;
+  color: var(--wp-heading) !important;
+}
+
+.wp-sheet {
+  border: var(--wp-dashed);
+  border-radius: var(--wp-radius-xl);
+  background: var(--wp-surface);
+  padding: 1.25rem;
+}
+
+.wp-dashed-box {
+  border: var(--wp-dashed);
+  border-radius: var(--wp-radius-md);
+  background: var(--wp-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

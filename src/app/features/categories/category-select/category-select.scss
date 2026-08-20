@@ -1,0 +1,193 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .page-shell {
+  width: 100%;
+  max-width: 960px;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: clamp(0.5rem, 1.2dvh, 0.85rem) clamp(0.75rem, 3vw, 1.25rem)
+    clamp(0.5rem, 1.2dvh, 0.85rem);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+:host ::ng-deep .back-link {
+  align-self: flex-start;
+  width: auto !important;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .page-shell__header {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  margin-bottom: clamp(0.5rem, 1.2dvh, 0.85rem);
+  padding-top: 0;
+}
+
+:host ::ng-deep .page-shell__content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-list {
+  --category-gap: clamp(1.25rem, 3dvh, 1.75rem);
+  --category-card-height: clamp(7.5rem, 20dvh, 10.5rem);
+  width: min(calc(100vw - 2rem), 52rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--category-gap);
+  margin: 0 auto;
+  padding: 1.35rem 0 0.85rem;
+}
+
+.category-choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 100%;
+  height: var(--category-card-height);
+  min-height: var(--category-card-height);
+  padding: clamp(0.85rem, 2dvh, 1.15rem) clamp(0.65rem, 1.5dvh, 1rem)
+    clamp(0.55rem, 1.4dvh, 0.85rem);
+  border: 2.5px solid var(--wp-border-dashed);
+  border-radius: var(--wp-radius-xl);
+  background: #ffffff;
+  text-decoration: none;
+  box-shadow:
+    0 4px 14px rgba(74, 69, 96, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  overflow: visible;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 20px rgba(74, 69, 96, 0.11),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.category-choice__badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  padding: clamp(0.3rem, 0.9dvh, 0.45rem) clamp(0.85rem, 2.2dvh, 1.35rem);
+  border: 2.5px solid currentColor;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(74, 69, 96, 0.06);
+  white-space: nowrap;
+}
+
+.category-choice__title {
+  display: block;
+  font-size: clamp(0.95rem, 2.2dvh, 1.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+.category-choice__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: calc(var(--wp-radius-xl) - 4px);
+}
+
+.category-choice__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.category-choice--emotions {
+  border-color: #e8b4cc;
+  color: #e892b8;
+  background: linear-gradient(180deg, #ffffff 0%, #fff8fb 100%);
+
+  .category-choice__title {
+    color: #e892b8;
+  }
+
+  .category-choice__badge {
+    border-color: #e8b4cc;
+    background: #fff8fb;
+  }
+}
+
+.category-choice--numbers {
+  border-color: #a8d4ea;
+  color: #6eb8dc;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbfe 100%);
+
+  .category-choice__title {
+    color: #6eb8dc;
+  }
+
+  .category-choice__badge {
+    border-color: #a8d4ea;
+    background: #f7fbfe;
+  }
+}
+
+.category-choice--sea-creatures {
+  border-color: #95d5b2;
+  color: #6bc492;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fdf9 100%);
+
+  .category-choice__title {
+    color: #6bc492;
+  }
+
+  .category-choice__badge {
+    border-color: #95d5b2;
+    background: #f7fdf9;
+  }
+}
+
+@media (max-width: 520px) {
+  .category-choice__badge {
+    max-width: calc(100% - 1.5rem);
+    white-space: normal;
+    text-align: center;
+  }
+
+  .category-choice__title {
+    font-size: clamp(0.85rem, 2dvh, 1rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-choice {
+    transition: none;
+  }
+}

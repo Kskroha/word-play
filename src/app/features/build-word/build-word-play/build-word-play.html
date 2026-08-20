@@ -1,0 +1,198 @@
+@if (!category()) {
+  <div class="play-page play-page--empty">
+    <p>Категория не найдена.</p>
+    <a mat-flat-button [routerLink]="['/categories']">К выбору категории</a>
+  </div>
+} @else if (isCompleted()) {
+  <div class="play-page play-page--completed">
+    <div class="completion-card">
+      <span class="completion-card__emoji" aria-hidden="true">🎉</span>
+      <h1 class="wp-display-title wp-display-title--md">Молодец!</h1>
+      <p class="wp-display-subtitle">Ты прошёл все задания в категории «{{ category()!.title }}».</p>
+      <div class="completion-card__actions">
+        <button mat-flat-button type="button" (click)="restartCategory()">
+          Пройти ещё раз
+        </button>
+        <a mat-stroked-button routerLink="/categories">Другая категория</a>
+        <a mat-button [routerLink]="['/categories', category()!.id]">К играм</a>
+      </div>
+    </div>
+  </div>
+} @else if (currentItem(); as item) {
+  <div class="play-page">
+    <header class="play-header">
+      <button mat-stroked-button type="button" class="play-header__back" (click)="goBackToCategories()">
+        ← Назад
+      </button>
+
+      <div class="play-header__main">
+        <h1 class="play-header__category play-header__category--{{ category()!.id }}">
+          {{ category()!.title }}
+        </h1>
+        <div
+          class="play-header__progress-track"
+          role="progressbar"
+          [attr.aria-valuenow]="progressPercent()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="play-header__progress-fill" [style.width.%]="progressPercent()"></div>
+        </div>
+        <span class="play-header__progress-label">{{ progressLabel() }}</span>
+      </div>
+    </header>
+
+    <div class="play-layout">
+      <section class="play-image" aria-label="Изображение задания">
+        <div
+          class="play-image__content"
+          [class.play-image__content--solo-hint]="!showPictureModeToggle()"
+        >
+        <div class="play-image__frame">
+          <div class="play-image__mask">
+          @if (usePicture()) {
+            <img
+              class="play-image__picture"
+              [src]="currentPictureUrl()"
+              [alt]="hintVisible() ? item.label : 'Задание'"
+              (error)="onPictureError()"
+            />
+          } @else {
+            <span class="play-image__emoji" aria-hidden="true">{{ item.imageEmoji }}</span>
+          }
+          </div>
+        </div>
+
+        @if (showPictureModeToggle()) {
+          <mat-button-toggle-group
+            class="play-image__mode-toggle"
+            [value]="pictureMode()"
+            (change)="setPictureMode($event.value)"
+            aria-label="Выбор вида картинок"
+          >
+            @for (mode of availablePictureModes(); track mode) {
+              <mat-button-toggle [value]="mode">
+                {{ pictureModeLabels[mode] }}
+              </mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        }
+
+        <button
+          mat-flat-button
+          type="button"
+          class="play-image__hint-button"
+          [attr.aria-expanded]="hintVisible()"
+          (click)="toggleHint()"
+        >
+          💡 Подсказка
+        </button>
+
+        @if (hintVisible()) {
+          <p class="play-image__label">{{ item.label }}</p>
+        } @else {
+          <span class="play-image__hint-placeholder" aria-hidden="true"></span>
+        }
+        </div>
+      </section>
+
+      <section class="play-workspace" aria-label="Собери фразу из букв">
+        <div class="play-workspace__body">
+        <div
+          class="phrase-builder"
+          [class.phrase-builder--incorrect]="answerStatus() === 'incorrect'"
+          [class.phrase-builder--correct]="answerStatus() === 'correct'"
+        >
+          @for (block of wordBlocks; track block.word; let blockIndex = $index) {
+            <div class="word-block">
+              <div
+                class="answer-slots"
+                [attr.aria-label]="'Часть ' + (blockIndex + 1)"
+              >
+                @for (slot of block.slotDropData; track $index; let slotIndex = $index) {
+                  <div
+                    class="answer-slot"
+                    [class.answer-slot--right]="isSlotCorrect(blockIndex, slotIndex)"
+                    [class.answer-slot--wrong]="isSlotWrong(blockIndex, slotIndex)"
+                    cdkDropList
+                    [id]="slotId(blockIndex, slotIndex)"
+                    [cdkDropListData]="slot"
+                    [cdkDropListConnectedTo]="getBlockDropListIds(block, blockIndex)"
+                    (cdkDropListDropped)="onDrop($event)"
+                    (click)="onSlotClick(blockIndex, slotIndex)"
+                  >
+                    @if (slot[0]; as tile) {
+                      <button
+                        type="button"
+                        class="letter-tile letter-tile--placed"
+                        [class.letter-tile--right]="isSlotCorrect(blockIndex, slotIndex)"
+                        [class.letter-tile--wrong]="isSlotWrong(blockIndex, slotIndex)"
+                        cdkDrag
+                        [cdkDragData]="tile"
+                        (click)="$event.stopPropagation(); onSlotClick(blockIndex, slotIndex)"
+                      >
+                        {{ tile.letter }}
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div
+                class="letter-bank"
+                cdkDropList
+                [id]="bankId(blockIndex)"
+                [cdkDropListData]="block.bank"
+                [cdkDropListConnectedTo]="getBlockDropListIds(block, blockIndex)"
+                (cdkDropListDropped)="onDrop($event)"
+              >
+                @for (tile of block.bank; track tile.id) {
+                  <button
+                    type="button"
+                    class="letter-tile"
+                    cdkDrag
+                    [cdkDragData]="tile"
+                    (click)="onTileClick(tile, blockIndex)"
+                  >
+                    {{ tile.letter }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (answerStatus() === 'incorrect') {
+          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+        }
+
+        @if (answerStatus() === 'correct') {
+          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+        }
+
+        @if (answerStatus() === 'correct') {
+          <div class="play-actions">
+            <button
+              mat-flat-button
+              type="button"
+              class="play-actions__button play-actions__button--success"
+              (click)="nextTask()"
+            >
+              Дальше →
+            </button>
+          </div>
+        }
+        </div>
+      </section>
+    </div>
+
+    <button
+      mat-stroked-button
+      type="button"
+      class="play-skip"
+      (click)="nextTask()"
+    >
+      Пропустить
+    </button>
+  </div>
+}

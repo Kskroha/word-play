@@ -1,0 +1,109 @@
+.category-list {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 480px);
+  margin: 0 auto;
+}
+
+.category-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 120px;
+  padding: 1.35rem 1.5rem;
+  border: 2.5px dashed var(--wp-border-dashed);
+  border-radius: var(--wp-radius-xl);
+  background: linear-gradient(180deg, #ffffff 0%, #faf8fc 100%);
+  text-decoration: none;
+  text-align: center;
+  box-shadow:
+    0 4px 14px rgba(74, 69, 96, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 20px rgba(74, 69, 96, 0.11),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.category-choice__title {
+  margin: 0;
+  font-size: clamp(1.85rem, 5vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+}
+
+.category-choice__description {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
+  font-weight: 700;
+  color: var(--wp-text-muted);
+  line-height: 1.35;
+}
+
+.category-choice__count {
+  margin-top: 0.15rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.category-choice--emotions {
+  border-color: #e8b4cc;
+  background: linear-gradient(180deg, #fff8fb 0%, var(--wp-pink-soft) 100%);
+
+  .category-choice__title {
+    color: #e892b8;
+    text-shadow: 0 3px 14px rgba(232, 146, 184, 0.25);
+  }
+
+  .category-choice__count {
+    color: #d88aad;
+  }
+}
+
+.category-choice--numbers {
+  border-color: #a8d4ea;
+  background: linear-gradient(180deg, #f7fbfe 0%, var(--wp-sky-soft) 100%);
+
+  .category-choice__title {
+    color: #6eb8dc;
+    text-shadow: 0 3px 14px rgba(110, 184, 220, 0.25);
+  }
+
+  .category-choice__count {
+    color: #5aa8cc;
+  }
+}
+
+.category-choice--sea-creatures {
+  border-color: #95d5b2;
+  background: linear-gradient(180deg, #f7fdf9 0%, var(--wp-mint-soft) 100%);
+
+  .category-choice__title {
+    color: #6bc492;
+    text-shadow: 0 3px 14px rgba(107, 196, 146, 0.25);
+  }
+
+  .category-choice__count {
+    color: #52b580;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-choice {
+    transition: none;
+  }
+}

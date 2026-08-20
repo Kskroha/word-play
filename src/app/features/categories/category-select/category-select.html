@@ -1,0 +1,23 @@
+<app-page-shell title="Что будем изучать?">
+  <div class="category-list">
+    @for (category of categories; track category.id) {
+      <a
+        class="category-choice category-choice--{{ category.id }}"
+        [routerLink]="['/categories', category.id]"
+      >
+        <span class="category-choice__badge">
+          <span class="category-choice__title">{{ category.title }}</span>
+        </span>
+        <div class="category-choice__art">
+          <img
+            class="category-choice__image"
+            [src]="categoryImageUrl(category.id)"
+            [alt]="category.title"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </a>
+    }
+  </div>
+</app-page-shell>

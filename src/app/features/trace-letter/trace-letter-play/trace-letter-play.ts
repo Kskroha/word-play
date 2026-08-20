@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
 import { getCategoryById } from '../../../core/data/categories';
 import {
+  findTraceBrushColorId,
   getLetterTraceRounds,
   LetterTraceRound,
   TRACE_BRUSH_COLORS,
@@ -101,7 +102,7 @@ export class TraceLetterPlay implements AfterViewInit, OnDestroy {
     const round = this.currentRound();
     if (round) {
       this.pad.setLetter(round.letter, round.guideColor);
-      this.applySelectedColor();
+      this.syncBrushColorToGuide(round.guideColor);
     }
 
     this.resizeObserver = new ResizeObserver(() => {
@@ -192,8 +193,16 @@ export class TraceLetterPlay implements AfterViewInit, OnDestroy {
     this.hasPainted.set(false);
     this.roundComplete.set(false);
     this.pad?.setLetter(round.letter, round.guideColor);
-    this.applySelectedColor();
+    this.syncBrushColorToGuide(round.guideColor);
     requestAnimationFrame(() => this.pad?.resize());
+  }
+
+  private syncBrushColorToGuide(guideColor: string): void {
+    const colorId = findTraceBrushColorId(guideColor);
+    if (colorId) {
+      this.selectedColorId.set(colorId);
+    }
+    this.applySelectedColor();
   }
 
   private applySelectedColor(): void {

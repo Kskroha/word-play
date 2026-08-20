@@ -26,7 +26,7 @@ export const TRACE_BRUSH_COLORS: TraceBrushColor[] = [
 ];
 
 /** Доля закрашенной площади буквы для успеха. */
-export const TRACE_MIN_FILL_RATIO = 0.9;
+export const TRACE_MIN_FILL_RATIO = 0.95;
 
 /** Доля пройденного контура буквы для успеха. */
 export const TRACE_MIN_OUTLINE_RATIO = 0.55;
@@ -34,6 +34,10 @@ export const TRACE_MIN_OUTLINE_RATIO = 0.55;
 export function pickRandomTraceGuideColor(): string {
   const index = Math.floor(Math.random() * TRACE_BRUSH_COLORS.length);
   return TRACE_BRUSH_COLORS[index]!.color;
+}
+
+export function findTraceBrushColorId(color: string): string | undefined {
+  return TRACE_BRUSH_COLORS.find((item) => item.color === color)?.id;
 }
 
 export function traceColorWithAlpha(color: string, alpha: number): string {

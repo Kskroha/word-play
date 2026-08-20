@@ -214,61 +214,73 @@ export class LetterTracePad {
     ctx.fillRect(0, 0, this.width, this.height);
   }
 
+  private getLetterLayout(ctx: CanvasRenderingContext2D): {
+    fontSize: number;
+    x: number;
+    y: number;
+  } {
+    const fontSize = Math.min(this.width, this.height) * 0.68;
+    const centerX = this.width / 2;
+    const centerY = this.height / 2;
+
+    ctx.font = `800 ${fontSize}px ${LETTER_FONT_FAMILY}`;
+    const metrics = ctx.measureText(this.letter);
+    const ascent = metrics.actualBoundingBoxAscent ?? fontSize * 0.8;
+    const descent = metrics.actualBoundingBoxDescent ?? fontSize * 0.2;
+    const baselineY = centerY + (ascent - descent) / 2;
+
+    return { fontSize, x: centerX, y: baselineY };
+  }
+
   private drawLetterGuide(ctx: CanvasRenderingContext2D): void {
     if (this.celebrating) {
       return;
     }
 
-    const fontSize = Math.min(this.width, this.height) * 0.68;
-    const centerX = this.width / 2;
-    const centerY = this.height / 2 + fontSize * 0.03;
+    const { fontSize, x, y } = this.getLetterLayout(ctx);
 
     ctx.save();
     ctx.font = `800 ${fontSize}px ${LETTER_FONT_FAMILY}`;
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.textBaseline = 'alphabetic';
 
     ctx.fillStyle = traceColorWithAlpha(this.guideColor, 0.34);
-    ctx.fillText(this.letter, centerX, centerY);
+    ctx.fillText(this.letter, x, y);
 
     ctx.lineWidth = Math.max(fontSize * 0.028, 4);
     ctx.strokeStyle = this.guideColor;
     ctx.setLineDash([Math.max(fontSize * 0.06, 10), Math.max(fontSize * 0.04, 7)]);
-    ctx.strokeText(this.letter, centerX, centerY);
+    ctx.strokeText(this.letter, x, y);
     ctx.setLineDash([]);
     ctx.restore();
   }
 
   private updateMask(): void {
-    const fontSize = Math.min(this.width, this.height) * 0.68;
-    const centerX = this.width / 2;
-    const centerY = this.height / 2 + fontSize * 0.03;
+    const { fontSize, x, y } = this.getLetterLayout(this.maskCtx);
 
     this.maskCtx.clearRect(0, 0, this.width, this.height);
     this.maskCtx.save();
     this.maskCtx.font = `800 ${fontSize}px ${LETTER_FONT_FAMILY}`;
     this.maskCtx.textAlign = 'center';
-    this.maskCtx.textBaseline = 'middle';
+    this.maskCtx.textBaseline = 'alphabetic';
     this.maskCtx.fillStyle = '#000000';
-    this.maskCtx.fillText(this.letter, centerX, centerY);
+    this.maskCtx.fillText(this.letter, x, y);
     this.maskCtx.restore();
   }
 
   private updateOutlineMask(): void {
-    const fontSize = Math.min(this.width, this.height) * 0.68;
-    const centerX = this.width / 2;
-    const centerY = this.height / 2 + fontSize * 0.03;
+    const { fontSize, x, y } = this.getLetterLayout(this.outlineCtx);
 
     this.outlineCtx.clearRect(0, 0, this.width, this.height);
     this.outlineCtx.save();
     this.outlineCtx.font = `800 ${fontSize}px ${LETTER_FONT_FAMILY}`;
     this.outlineCtx.textAlign = 'center';
-    this.outlineCtx.textBaseline = 'middle';
+    this.outlineCtx.textBaseline = 'alphabetic';
     this.outlineCtx.lineWidth = Math.max(fontSize * 0.11, 14);
     this.outlineCtx.lineJoin = 'round';
     this.outlineCtx.lineCap = 'round';
     this.outlineCtx.strokeStyle = '#000000';
-    this.outlineCtx.strokeText(this.letter, centerX, centerY);
+    this.outlineCtx.strokeText(this.letter, x, y);
     this.outlineCtx.restore();
   }
 }

@@ -9,12 +9,12 @@ import {
   scaleLetterStrokes,
 } from '../data/letter-stroke-paths';
 import {
-  getLetterOutlineRatio,
-  OUTLINE_TRACE_MIN_RATIO,
+  OUTLINE_GUIDE_FADE_MIN_RATIO,
   TRACE_BRUSH_COLORS,
 } from './letter-trace';
 
-const OUTLINE_FADE_STEP = 0.34;
+const OUTLINE_FADE_STEP = 0.28;
+const GUIDE_FADE_ALPHA_THRESHOLD = 150;
 
 export class LetterOutlinePad {
   private readonly guideCtx: CanvasRenderingContext2D;
@@ -143,12 +143,33 @@ export class LetterOutlinePad {
     }
   }
 
-  getOutlineRatio(): number {
-    return getLetterOutlineRatio(this.paintCtx, this.outlineCtx, this.width, this.height);
+  getGuideFadeRatio(): number {
+    const guideData = this.outlineGuideCtx.getImageData(0, 0, this.width, this.height).data;
+    const eraseData = this.outlineEraseCtx.getImageData(0, 0, this.width, this.height).data;
+
+    let guidePixels = 0;
+    let fadedPixels = 0;
+
+    for (let index = 3; index < guideData.length; index += 4) {
+      if (guideData[index]! <= 16) {
+        continue;
+      }
+
+      guidePixels += 1;
+      if (eraseData[index]! >= GUIDE_FADE_ALPHA_THRESHOLD) {
+        fadedPixels += 1;
+      }
+    }
+
+    if (guidePixels === 0) {
+      return 0;
+    }
+
+    return fadedPixels / guidePixels;
   }
 
   isRoundSuccessful(): boolean {
-    return this.getOutlineRatio() >= OUTLINE_TRACE_MIN_RATIO;
+    return this.getGuideFadeRatio() >= OUTLINE_GUIDE_FADE_MIN_RATIO;
   }
 
   handlePointerDown(clientX: number, clientY: number): void {

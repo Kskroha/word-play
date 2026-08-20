@@ -35,6 +35,9 @@ export const TRACE_MIN_OUTLINE_RATIO = 0.55;
 /** Доля пройденного контура для успеха в игре «Обведи букву». */
 export const OUTLINE_TRACE_MIN_RATIO = 0.8;
 
+/** Доля исчезнувшего пунктирного контура для успеха в игре «Напиши букву». */
+export const OUTLINE_GUIDE_FADE_MIN_RATIO = 0.92;
+
 export function pickRandomTraceGuideColor(): string {
   const index = Math.floor(Math.random() * TRACE_BRUSH_COLORS.length);
   return TRACE_BRUSH_COLORS[index]!.color;

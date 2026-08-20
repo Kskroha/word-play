@@ -55,13 +55,13 @@
         }
       </mat-button-toggle-group>
 
-      <p class="trace-prompt">Закрась букву</p>
+      <p class="trace-prompt">Напиши букву</p>
 
       <div class="trace-pad-wrap">
         <div
           class="trace-pad"
           [class.trace-pad--success]="roundComplete()"
-          aria-label="Область для раскрашивания буквы {{ round.letter }}"
+          aria-label="Область для обведения буквы {{ round.letter }}"
         >
           <canvas #guideCanvas class="trace-pad__guide" aria-hidden="true"></canvas>
           <canvas

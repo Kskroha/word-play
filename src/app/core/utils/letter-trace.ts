@@ -1,3 +1,4 @@
+import { getLetterCategoryItems, LetterAlphabetId } from '../data/categories';
 import { Category } from '../models/category.model';
 import { shuffle } from './shuffle';
 
@@ -28,8 +29,11 @@ export const TRACE_BRUSH_COLORS: TraceBrushColor[] = [
 /** Доля закрашенной площади буквы для успеха. */
 export const TRACE_MIN_FILL_RATIO = 0.95;
 
-/** Доля пройденного контура буквы для успеха. */
+/** Доля пройденного контура буквы для успеха в игре «Закрась букву». */
 export const TRACE_MIN_OUTLINE_RATIO = 0.55;
+
+/** Доля пройденного контура для успеха в игре «Обведи букву». */
+export const OUTLINE_TRACE_MIN_RATIO = 0.8;
 
 export function pickRandomTraceGuideColor(): string {
   const index = Math.floor(Math.random() * TRACE_BRUSH_COLORS.length);
@@ -49,13 +53,17 @@ export function traceColorWithAlpha(color: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+export function getLetterTraceRoundsForAlphabet(alphabet: LetterAlphabetId): LetterTraceRound[] {
+  return getLetterCategoryItems(alphabet).map((item) => ({
+    letter: item.label,
+    sampleWord: item.label,
+    guideColor: pickRandomTraceGuideColor(),
+  }));
+}
+
 export function getLetterTraceRounds(category: Category): LetterTraceRound[] {
   if (category.id === 'letters') {
-    return category.items.map((item) => ({
-      letter: item.label,
-      sampleWord: item.label,
-      guideColor: pickRandomTraceGuideColor(),
-    }));
+    return getLetterTraceRoundsForAlphabet('ru');
   }
 
   const letterToWord = new Map<string, string>();

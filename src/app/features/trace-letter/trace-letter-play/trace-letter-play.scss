@@ -46,6 +46,18 @@ $trace-content-width: min(100%, 34rem);
   color: var(--wp-heading);
 }
 
+.trace-alphabet-toggle {
+  border-radius: 999px !important;
+  overflow: hidden;
+  border: var(--wp-dashed) !important;
+  background: var(--wp-surface) !important;
+
+  .mat-button-toggle-label-content {
+    font-weight: 800;
+    padding-inline: 1rem !important;
+  }
+}
+
 .trace-pad-wrap {
   width: 100%;
   flex: 1;

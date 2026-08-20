@@ -16,8 +16,22 @@ export const routes: Routes = [
   {
     path: 'categories/letters',
     loadComponent: () =>
+      import('./features/letters/letter-game-list/letter-game-list').then(
+        (m) => m.LetterGameList,
+      ),
+  },
+  {
+    path: 'categories/letters/paint-letter',
+    loadComponent: () =>
       import('./features/trace-letter/trace-letter-play/trace-letter-play').then(
         (m) => m.TraceLetterPlay,
+      ),
+  },
+  {
+    path: 'categories/letters/outline-letter',
+    loadComponent: () =>
+      import('./features/outline-letter/outline-letter-play/outline-letter-play').then(
+        (m) => m.OutlineLetterPlay,
       ),
   },
   {

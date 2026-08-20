@@ -13,27 +13,27 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Router, RouterLink } from '@angular/router';
 import { getCategoryById, LETTER_ALPHABET_OPTIONS, LetterAlphabetId } from '../../../core/data/categories';
+import { LetterOutlinePad } from '../../../core/utils/letter-outline-pad';
 import {
   findTraceBrushColorId,
   getLetterTraceRoundsForAlphabet,
   LetterTraceRound,
   TRACE_BRUSH_COLORS,
 } from '../../../core/utils/letter-trace';
-import { LetterTracePad } from '../../../core/utils/letter-trace-pad';
 
 @Component({
-  selector: 'app-trace-letter-play',
+  selector: 'app-outline-letter-play',
   imports: [RouterLink, MatButtonModule, MatButtonToggleModule],
-  templateUrl: './trace-letter-play.html',
-  styleUrl: './trace-letter-play.scss',
+  templateUrl: './outline-letter-play.html',
+  styleUrl: './outline-letter-play.scss',
 })
-export class TraceLetterPlay implements OnDestroy {
+export class OutlineLetterPlay implements OnDestroy {
   private readonly router = inject(Router);
 
   private readonly guideCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('guideCanvas');
   private readonly paintCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('paintCanvas');
 
-  private pad: LetterTracePad | null = null;
+  private pad: LetterOutlinePad | null = null;
   private padCanvas: HTMLCanvasElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
   private isPointerActive = false;
@@ -50,8 +50,8 @@ export class TraceLetterPlay implements OnDestroy {
 
   readonly completionSubtitle = computed(() => {
     return this.alphabet() === 'en'
-      ? 'Ты раскрасил все буквы английского алфавита!'
-      : 'Ты раскрасил все буквы русского алфавита!';
+      ? 'Ты написал все буквы английского алфавита!'
+      : 'Ты написал все буквы русского алфавита!';
   });
 
   readonly rounds = signal<LetterTraceRound[]>([]);
@@ -130,11 +130,11 @@ export class TraceLetterPlay implements OnDestroy {
 
     this.releasePad();
     this.padCanvas = guideCanvas;
-    this.pad = new LetterTracePad(guideCanvas, paintCanvas);
+    this.pad = new LetterOutlinePad(guideCanvas, paintCanvas);
 
     const round = this.currentRound();
     if (round) {
-      this.pad.setLetter(round.letter, round.guideColor);
+      this.pad.setLetter(round.letter, round.guideColor, this.alphabet());
       this.syncBrushColorToGuide(round.guideColor);
     }
 
@@ -235,7 +235,7 @@ export class TraceLetterPlay implements OnDestroy {
     this.isPointerActive = false;
     this.hasPainted.set(false);
     this.roundComplete.set(false);
-    this.pad?.setLetter(round.letter, round.guideColor);
+    this.pad?.setLetter(round.letter, round.guideColor, this.alphabet());
     this.syncBrushColorToGuide(round.guideColor);
     requestAnimationFrame(() => this.pad?.resize());
   }

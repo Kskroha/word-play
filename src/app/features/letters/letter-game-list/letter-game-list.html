@@ -1,0 +1,32 @@
+@if (!category()) {
+  <app-page-shell title="Категория не найдена" [backLink]="['/categories']">
+    <p class="empty-state">Такой категории нет. Выбери другую.</p>
+    <a class="empty-state__link" routerLink="/categories">К выбору категории</a>
+  </app-page-shell>
+} @else {
+  <app-page-shell
+    [title]="category()!.title"
+    subtitle="Выбери игру"
+    [backLink]="['/categories']"
+  >
+    <div class="game-list">
+      @for (game of games; track game.id) {
+        <a
+          class="game-choice game-choice--{{ game.id }}"
+          [routerLink]="['/categories', 'letters', game.id]"
+        >
+          <h2 class="game-choice__title">{{ game.title }}</h2>
+          <div class="game-choice__art">
+            <img
+              class="game-choice__image"
+              [src]="gameImageUrl(game.id)"
+              [alt]="game.title"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </a>
+      }
+    </div>
+  </app-page-shell>
+}

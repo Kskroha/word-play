@@ -3,11 +3,9 @@ import {
   getLetterPaintRatio,
   TRACE_BRUSH_COLORS,
   TRACE_MIN_FILL_RATIO,
-  TRACE_MIN_OUTLINE_RATIO,
   traceColorWithAlpha,
 } from './letter-trace';
-
-const LETTER_FONT_FAMILY = 'Nunito, "Segoe UI", sans-serif';
+import { getLetterLayout, LETTER_FONT_FAMILY } from './letter-trace-layout';
 
 export class LetterTracePad {
   private readonly guideCtx: CanvasRenderingContext2D;
@@ -117,10 +115,7 @@ export class LetterTracePad {
   }
 
   isRoundSuccessful(): boolean {
-    return (
-      this.getPaintRatio() >= TRACE_MIN_FILL_RATIO ||
-      this.getOutlineRatio() >= TRACE_MIN_OUTLINE_RATIO
-    );
+    return this.getPaintRatio() >= TRACE_MIN_FILL_RATIO;
   }
 
   handlePointerDown(clientX: number, clientY: number): void {
@@ -219,17 +214,7 @@ export class LetterTracePad {
     x: number;
     y: number;
   } {
-    const fontSize = Math.min(this.width, this.height) * 0.68;
-    const centerX = this.width / 2;
-    const centerY = this.height / 2;
-
-    ctx.font = `800 ${fontSize}px ${LETTER_FONT_FAMILY}`;
-    const metrics = ctx.measureText(this.letter);
-    const ascent = metrics.actualBoundingBoxAscent ?? fontSize * 0.8;
-    const descent = metrics.actualBoundingBoxDescent ?? fontSize * 0.2;
-    const baselineY = centerY + (ascent - descent) / 2;
-
-    return { fontSize, x: centerX, y: baselineY };
+    return getLetterLayout(ctx, this.letter, this.width, this.height);
   }
 
   private drawLetterGuide(ctx: CanvasRenderingContext2D): void {

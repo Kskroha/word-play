@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="Напиши букву">
+  <defs>
+    <linearGradient id="outline-pad-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff8f0"/>
+      <stop offset="50%" stop-color="#fff4f8"/>
+      <stop offset="100%" stop-color="#eef8fd"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="272" height="272" rx="36" fill="url(#outline-pad-bg)" stroke="#a8d4ea" stroke-width="4" stroke-dasharray="12 8"/>
+  <path d="M118 218 L160 98 L202 218" fill="none" stroke="#6eb8dc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14 9"/>
+  <path d="M136 168 H184" fill="none" stroke="#6eb8dc" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 9"/>
+  <path d="M118 188c18-28 36-28 54 0" fill="none" stroke="#7eb8dc" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="248" cy="248" r="34" fill="#7eb8dc" stroke="#fff" stroke-width="4"/>
+  <path d="M232 248c8-10 18-10 26 0" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -1,4 +1,11 @@
-import { Category, CategoryId } from '../models/category.model';
+import { Category, CategoryId, CategoryItem } from '../models/category.model';
+
+export type LetterAlphabetId = 'ru' | 'en';
+
+export const LETTER_ALPHABET_OPTIONS: { id: LetterAlphabetId; label: string }[] = [
+  { id: 'ru', label: 'А-Я' },
+  { id: 'en', label: 'A-Z' },
+];
 
 const CYRILLIC_LETTERS: { id: string; letter: string }[] = [
   { id: 'a', letter: 'а' },
@@ -36,21 +43,65 @@ const CYRILLIC_LETTERS: { id: string; letter: string }[] = [
   { id: 'ya', letter: 'я' },
 ];
 
+const LATIN_LETTERS: { id: string; letter: string }[] = [
+  { id: 'a', letter: 'a' },
+  { id: 'b', letter: 'b' },
+  { id: 'c', letter: 'c' },
+  { id: 'd', letter: 'd' },
+  { id: 'e', letter: 'e' },
+  { id: 'f', letter: 'f' },
+  { id: 'g', letter: 'g' },
+  { id: 'h', letter: 'h' },
+  { id: 'i', letter: 'i' },
+  { id: 'j', letter: 'j' },
+  { id: 'k', letter: 'k' },
+  { id: 'l', letter: 'l' },
+  { id: 'm', letter: 'm' },
+  { id: 'n', letter: 'n' },
+  { id: 'o', letter: 'o' },
+  { id: 'p', letter: 'p' },
+  { id: 'q', letter: 'q' },
+  { id: 'r', letter: 'r' },
+  { id: 's', letter: 's' },
+  { id: 't', letter: 't' },
+  { id: 'u', letter: 'u' },
+  { id: 'v', letter: 'v' },
+  { id: 'w', letter: 'w' },
+  { id: 'x', letter: 'x' },
+  { id: 'y', letter: 'y' },
+  { id: 'z', letter: 'z' },
+];
+
+function buildLetterCategoryItems(
+  letters: { id: string; letter: string }[],
+  locale: 'ru-RU' | 'en-US',
+): CategoryItem[] {
+  return letters.map(({ id, letter }) => {
+    const upper = letter.toLocaleUpperCase(locale);
+    return {
+      id,
+      label: upper,
+      blocks: [upper],
+      imageEmoji: upper,
+    };
+  });
+}
+
+export function getLetterCategoryItems(alphabet: LetterAlphabetId): CategoryItem[] {
+  if (alphabet === 'en') {
+    return buildLetterCategoryItems(LATIN_LETTERS, 'en-US');
+  }
+
+  return buildLetterCategoryItems(CYRILLIC_LETTERS, 'ru-RU');
+}
+
 export const CATEGORIES: Category[] = [
   {
     id: 'letters',
     title: 'Буквы',
     description: 'Учимся раскрашивать буквы',
     emoji: '🔤',
-    items: CYRILLIC_LETTERS.map(({ id, letter }) => {
-      const upper = letter.toLocaleUpperCase('ru-RU');
-      return {
-        id,
-        label: upper,
-        blocks: [upper],
-        imageEmoji: upper,
-      };
-    }),
+    items: getLetterCategoryItems('ru'),
   },
   {
     id: 'emotions',

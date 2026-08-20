@@ -182,9 +182,8 @@ export class OutlineLetterPlay implements OnDestroy {
 
     event.preventDefault();
     const events = event.getCoalescedEvents?.() ?? [event];
-    for (const moveEvent of events) {
-      this.pad?.handlePointerMove(moveEvent.clientX, moveEvent.clientY);
-    }
+    const lastEvent = events[events.length - 1] ?? event;
+    this.pad?.handlePointerMove(lastEvent.clientX, lastEvent.clientY);
   }
 
   onPointerUp(event: PointerEvent): void {

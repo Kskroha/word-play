@@ -14,11 +14,13 @@ import {
 } from './letter-trace';
 
 const OUTLINE_FADE_STEP = 0.22;
-const GUIDE_FADE_ALPHA_THRESHOLD = 68;
-const GUIDE_FADE_SAMPLE_STRIDE = 4;
+const PROGRESS_CELL_SIZE = 10;
+const MAX_CANVAS_SIDE = 720;
+const MAX_DEVICE_PIXEL_RATIO = 1.25;
+const GUIDE_REDRAW_INTERVAL_MS = 120;
 
 function createDrawingContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
-  return canvas.getContext('2d', { desynchronized: true })!;
+  return canvas.getContext('2d')!;
 }
 
 export class LetterOutlinePad {
@@ -33,12 +35,19 @@ export class LetterOutlinePad {
 
   private width = 0;
   private height = 0;
+  private progressCols = 0;
+  private progressRows = 0;
+  private guideCellTotal = 0;
+  private guideCellFlags = new Uint8Array(0);
+  private tracedCellFlags = new Uint8Array(0);
   private letter = 'А';
   private alphabet: LetterAlphabetId = 'ru';
   private scaledStrokes: LetterStrokes = [];
   private isDrawing = false;
   private celebrating = false;
+  private eraseMaskDirty = false;
   private guideRedrawQueued = false;
+  private lastGuideRedrawAt = 0;
   private lastX = 0;
   private lastY = 0;
 
@@ -62,9 +71,9 @@ export class LetterOutlinePad {
 
   resize(): void {
     const rect = this.guideCanvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const nextWidth = Math.max(Math.floor(rect.width * dpr), 1);
-    const nextHeight = Math.max(Math.floor(rect.height * dpr), 1);
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO);
+    const nextWidth = Math.min(Math.max(Math.floor(rect.width * dpr), 1), MAX_CANVAS_SIDE);
+    const nextHeight = Math.min(Math.max(Math.floor(rect.height * dpr), 1), MAX_CANVAS_SIDE);
 
     if (nextWidth === this.width && nextHeight === this.height) {
       return;
@@ -104,6 +113,7 @@ export class LetterOutlinePad {
     this.updateScaledStrokes();
     this.rebuildOutlineGuide();
     this.updateOutlineMask();
+    this.rebuildProgressGrid();
     this.redrawGuide();
 
     if (previousPaint) {
@@ -131,6 +141,7 @@ export class LetterOutlinePad {
     this.updateScaledStrokes();
     this.rebuildOutlineGuide();
     this.updateOutlineMask();
+    this.rebuildProgressGrid();
     this.clearPaint(false);
     this.redrawGuide();
   }
@@ -144,6 +155,8 @@ export class LetterOutlinePad {
   clearPaint(redrawGuide = true): void {
     this.paintCtx.clearRect(0, 0, this.width, this.height);
     this.outlineEraseCtx.clearRect(0, 0, this.width, this.height);
+    this.tracedCellFlags.fill(0);
+    this.eraseMaskDirty = false;
     if (redrawGuide) {
       this.celebrating = false;
       this.guideRedrawQueued = false;
@@ -152,29 +165,18 @@ export class LetterOutlinePad {
   }
 
   getGuideFadeRatio(): number {
-    const guideData = this.outlineGuideCtx.getImageData(0, 0, this.width, this.height).data;
-    const eraseData = this.outlineEraseCtx.getImageData(0, 0, this.width, this.height).data;
-
-    let guidePixels = 0;
-    let fadedPixels = 0;
-    const stride = GUIDE_FADE_SAMPLE_STRIDE * 4;
-
-    for (let index = 3; index < guideData.length; index += stride) {
-      if (guideData[index]! <= 16) {
-        continue;
-      }
-
-      guidePixels += 1;
-      if (eraseData[index]! >= GUIDE_FADE_ALPHA_THRESHOLD) {
-        fadedPixels += 1;
-      }
-    }
-
-    if (guidePixels === 0) {
+    if (this.guideCellTotal === 0) {
       return 0;
     }
 
-    return fadedPixels / guidePixels;
+    let tracedCells = 0;
+    for (let index = 0; index < this.guideCellFlags.length; index += 1) {
+      if (this.guideCellFlags[index] && this.tracedCellFlags[index]) {
+        tracedCells += 1;
+      }
+    }
+
+    return tracedCells / this.guideCellTotal;
   }
 
   isRoundSuccessful(): boolean {
@@ -195,12 +197,20 @@ export class LetterOutlinePad {
     }
 
     const point = this.getCanvasPoint(clientX, clientY);
-    this.paintStrokeTo(point.x, point.y);
+    if (point.x === this.lastX && point.y === this.lastY) {
+      return;
+    }
+
+    this.paintSegment(this.lastX, this.lastY, point.x, point.y);
+    this.lastX = point.x;
+    this.lastY = point.y;
+    this.scheduleGuideRedraw();
   }
 
   handlePointerUp(): void {
     this.isDrawing = false;
     this.guideRedrawQueued = false;
+    this.flushEraseMask();
     this.redrawGuide();
   }
 
@@ -225,36 +235,6 @@ export class LetterOutlinePad {
     this.brushSize = Math.max(getStrokeMaskLineWidth(canvasSize) * 1.85, 56);
   }
 
-  private paintStrokeTo(x: number, y: number): void {
-    const dx = x - this.lastX;
-    const dy = y - this.lastY;
-    const distance = Math.hypot(dx, dy);
-    const step = Math.max(this.brushSize * 0.22, 2);
-
-    if (distance <= step) {
-      this.paintSegment(this.lastX, this.lastY, x, y);
-      this.lastX = x;
-      this.lastY = y;
-      return;
-    }
-
-    const steps = Math.ceil(distance / step);
-    let prevX = this.lastX;
-    let prevY = this.lastY;
-
-    for (let index = 1; index <= steps; index += 1) {
-      const t = index / steps;
-      const nextX = this.lastX + dx * t;
-      const nextY = this.lastY + dy * t;
-      this.paintSegment(prevX, prevY, nextX, nextY);
-      prevX = nextX;
-      prevY = nextY;
-    }
-
-    this.lastX = x;
-    this.lastY = y;
-  }
-
   private paintDot(x: number, y: number): void {
     this.paintCtx.fillStyle = this.brushColor;
     this.paintCtx.beginPath();
@@ -262,15 +242,12 @@ export class LetterOutlinePad {
     this.paintCtx.fill();
     this.applyOutlineMask();
     this.fadeOutlineDot(x, y);
-    this.guideRedrawQueued = false;
+    this.markBrushArea(x, y, x, y);
+    this.flushEraseMask();
     this.redrawGuide();
   }
 
   private paintSegment(x1: number, y1: number, x2: number, y2: number): void {
-    if (x1 === x2 && y1 === y2) {
-      return;
-    }
-
     this.paintCtx.strokeStyle = this.brushColor;
     this.paintCtx.lineWidth = this.brushSize;
     this.paintCtx.lineCap = 'round';
@@ -281,7 +258,7 @@ export class LetterOutlinePad {
     this.paintCtx.stroke();
     this.applyOutlineMask();
     this.fadeOutlineSegment(x1, y1, x2, y2);
-    this.scheduleGuideRedraw();
+    this.markBrushArea(x1, y1, x2, y2);
   }
 
   private applyOutlineMask(): void {
@@ -291,18 +268,14 @@ export class LetterOutlinePad {
   }
 
   private fadeOutlineDot(x: number, y: number): void {
-    this.outlineEraseCtx.save();
     this.outlineEraseCtx.fillStyle = `rgba(255, 255, 255, ${OUTLINE_FADE_STEP})`;
     this.outlineEraseCtx.beginPath();
     this.outlineEraseCtx.arc(x, y, this.brushSize / 2, 0, Math.PI * 2);
     this.outlineEraseCtx.fill();
-    this.outlineEraseCtx.globalCompositeOperation = 'destination-in';
-    this.outlineEraseCtx.drawImage(this.outlineCanvas, 0, 0);
-    this.outlineEraseCtx.restore();
+    this.eraseMaskDirty = true;
   }
 
   private fadeOutlineSegment(x1: number, y1: number, x2: number, y2: number): void {
-    this.outlineEraseCtx.save();
     this.outlineEraseCtx.strokeStyle = `rgba(255, 255, 255, ${OUTLINE_FADE_STEP})`;
     this.outlineEraseCtx.lineWidth = this.brushSize;
     this.outlineEraseCtx.lineCap = 'round';
@@ -311,24 +284,44 @@ export class LetterOutlinePad {
     this.outlineEraseCtx.moveTo(x1, y1);
     this.outlineEraseCtx.lineTo(x2, y2);
     this.outlineEraseCtx.stroke();
-    this.outlineEraseCtx.globalCompositeOperation = 'destination-in';
-    this.outlineEraseCtx.drawImage(this.outlineCanvas, 0, 0);
-    this.outlineEraseCtx.restore();
+    this.eraseMaskDirty = true;
   }
 
-  private scheduleGuideRedraw(): void {
-    if (this.guideRedrawQueued) {
+  private flushEraseMask(): void {
+    if (!this.eraseMaskDirty) {
       return;
     }
 
-    this.guideRedrawQueued = true;
-    requestAnimationFrame(() => {
-      this.guideRedrawQueued = false;
-      if (!this.isDrawing) {
+    this.outlineEraseCtx.globalCompositeOperation = 'destination-in';
+    this.outlineEraseCtx.drawImage(this.outlineCanvas, 0, 0);
+    this.outlineEraseCtx.globalCompositeOperation = 'source-over';
+    this.eraseMaskDirty = false;
+  }
+
+  private scheduleGuideRedraw(): void {
+    const now = performance.now();
+    if (now - this.lastGuideRedrawAt < GUIDE_REDRAW_INTERVAL_MS) {
+      if (this.guideRedrawQueued) {
         return;
       }
-      this.redrawGuide();
-    });
+
+      this.guideRedrawQueued = true;
+      requestAnimationFrame(() => {
+        this.guideRedrawQueued = false;
+        if (!this.isDrawing) {
+          return;
+        }
+
+        this.lastGuideRedrawAt = performance.now();
+        this.flushEraseMask();
+        this.redrawGuide();
+      });
+      return;
+    }
+
+    this.lastGuideRedrawAt = now;
+    this.flushEraseMask();
+    this.redrawGuide();
   }
 
   private redrawGuide(): void {
@@ -380,5 +373,77 @@ export class LetterOutlinePad {
       lineWidth: getStrokeMaskLineWidth(canvasSize),
       color: '#000000',
     });
+  }
+
+  private rebuildProgressGrid(): void {
+    this.progressCols = Math.max(Math.ceil(this.width / PROGRESS_CELL_SIZE), 1);
+    this.progressRows = Math.max(Math.ceil(this.height / PROGRESS_CELL_SIZE), 1);
+    const cellCount = this.progressCols * this.progressRows;
+
+    this.guideCellFlags = new Uint8Array(cellCount);
+    this.tracedCellFlags = new Uint8Array(cellCount);
+    this.guideCellTotal = 0;
+
+    if (this.width === 0 || this.height === 0) {
+      return;
+    }
+
+    const guideData = this.outlineGuideCtx.getImageData(0, 0, this.width, this.height).data;
+
+    for (let row = 0; row < this.progressRows; row += 1) {
+      for (let col = 0; col < this.progressCols; col += 1) {
+        const startX = col * PROGRESS_CELL_SIZE;
+        const startY = row * PROGRESS_CELL_SIZE;
+        const endX = Math.min(startX + PROGRESS_CELL_SIZE, this.width);
+        const endY = Math.min(startY + PROGRESS_CELL_SIZE, this.height);
+
+        if (this.cellHasGuide(guideData, startX, startY, endX, endY)) {
+          const index = row * this.progressCols + col;
+          this.guideCellFlags[index] = 1;
+          this.guideCellTotal += 1;
+        }
+      }
+    }
+  }
+
+  private cellHasGuide(
+    guideData: Uint8ClampedArray,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+  ): boolean {
+    for (let y = startY; y < endY; y += 2) {
+      for (let x = startX; x < endX; x += 2) {
+        const alpha = guideData[(y * this.width + x) * 4 + 3]!;
+        if (alpha > 16) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private markBrushArea(x1: number, y1: number, x2: number, y2: number): void {
+    const radius = this.brushSize / 2;
+    const minX = Math.min(x1, x2) - radius;
+    const maxX = Math.max(x1, x2) + radius;
+    const minY = Math.min(y1, y2) - radius;
+    const maxY = Math.max(y1, y2) + radius;
+
+    const startCol = Math.max(Math.floor(minX / PROGRESS_CELL_SIZE), 0);
+    const endCol = Math.min(Math.ceil(maxX / PROGRESS_CELL_SIZE), this.progressCols);
+    const startRow = Math.max(Math.floor(minY / PROGRESS_CELL_SIZE), 0);
+    const endRow = Math.min(Math.ceil(maxY / PROGRESS_CELL_SIZE), this.progressRows);
+
+    for (let row = startRow; row < endRow; row += 1) {
+      for (let col = startCol; col < endCol; col += 1) {
+        const index = row * this.progressCols + col;
+        if (this.guideCellFlags[index]) {
+          this.tracedCellFlags[index] = 1;
+        }
+      }
+    }
   }
 }

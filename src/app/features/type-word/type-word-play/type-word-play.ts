@@ -1,6 +1,8 @@
 import {
+  afterNextRender,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -43,6 +45,7 @@ export class TypeWordPlay {
   private readonly router = inject(Router);
   private readonly settingsService = inject(GameSettingsService);
   private readonly sound = inject(SoundService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly pictureModeLabels = PICTURE_MODE_LABELS;
 
@@ -144,6 +147,8 @@ export class TypeWordPlay {
         queueMicrotask(() => this.focusInput());
       });
     });
+
+    afterNextRender(() => this.setupMobileTypingGuard());
   }
 
   focusInput(): void {
@@ -151,7 +156,40 @@ export class TypeWordPlay {
       return;
     }
 
-    this.typeInput()?.nativeElement.focus();
+    const input = this.typeInput()?.nativeElement;
+    if (!input) {
+      return;
+    }
+
+    input.focus({ preventScroll: true });
+    this.resetPageScroll();
+  }
+
+  private setupMobileTypingGuard(): void {
+    const input = this.typeInput()?.nativeElement;
+    if (!input) {
+      return;
+    }
+
+    const onViewportChange = (): void => {
+      this.resetPageScroll();
+    };
+
+    input.addEventListener('focus', onViewportChange, { passive: true });
+    window.visualViewport?.addEventListener('resize', onViewportChange, { passive: true });
+    window.visualViewport?.addEventListener('scroll', onViewportChange, { passive: true });
+
+    this.destroyRef.onDestroy(() => {
+      input.removeEventListener('focus', onViewportChange);
+      window.visualViewport?.removeEventListener('resize', onViewportChange);
+      window.visualViewport?.removeEventListener('scroll', onViewportChange);
+    });
+  }
+
+  private resetPageScroll(): void {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }
 
   onTypeInput(event: Event): void {

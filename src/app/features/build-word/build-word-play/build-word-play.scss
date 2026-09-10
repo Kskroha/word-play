@@ -365,45 +365,6 @@
       calc(4.75rem + env(safe-area-inset-bottom));
   }
 
-  .play-header {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.35rem;
-    margin-bottom: clamp(0.35rem, 1dvh, 0.65rem);
-  }
-
-  .play-header__back {
-    position: relative;
-    top: auto;
-    left: auto;
-    align-self: flex-start;
-    z-index: auto;
-    min-height: 42px !important;
-    padding: 0 0.85rem !important;
-    font-size: 0.88rem !important;
-  }
-
-  .play-header__main {
-    gap: 0.4rem;
-    padding: 0;
-    width: 100%;
-  }
-
-  .play-header__category {
-    font-size: clamp(1.35rem, 4vw, 1.85rem);
-  }
-
-  .play-header__progress-track {
-    width: 100%;
-    max-width: none;
-    height: 12px;
-  }
-
-  .play-header__progress-label {
-    font-size: 0.85rem;
-  }
-
   .play-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
@@ -512,9 +473,6 @@
   }
 
   .play-skip {
-    right: max(0.85rem, env(safe-area-inset-right));
-    bottom: calc(0.65rem + env(safe-area-inset-bottom));
-    min-height: 42px !important;
     padding: 0 1.1rem !important;
     font-size: 0.9rem !important;
   }

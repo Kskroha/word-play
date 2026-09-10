@@ -76,26 +76,22 @@
       </section>
 
       <section class="type-workspace" aria-label="Набери слово на клавиатуре">
-        <div
-          class="type-slots"
-          appTileScrollRow
-          [class.type-slots--incorrect]="answerStatus() === 'incorrect'"
-          [class.type-slots--correct]="answerStatus() === 'correct'"
-          (click)="focusInput()"
-        >
-          @for (letter of expectedLetters(); track $index; let index = $index) {
-            <div
-              class="type-slot"
-              [class.type-slot--filled]="isSlotFilled(index)"
-              [class.type-slot--active]="isSlotActive(index)"
-              [class.type-slot--right]="isSlotCorrect(index)"
-              [class.type-slot--wrong]="isSlotWrong(index)"
-            >
-              @if (slotLetter(index); as letter) {
-                <span class="type-slot__letter">{{ letter }}</span>
-              }
-            </div>
-          }
+        <div class="type-workspace__core">
+          <div class="type-slots" appTileScrollRow (click)="focusInput()">
+            @for (letter of expectedLetters(); track $index; let index = $index) {
+              <div
+                class="type-slot"
+                [class.type-slot--filled]="isSlotFilled(index)"
+                [class.type-slot--active]="isSlotActive(index)"
+                [class.type-slot--right]="isSlotCorrect(index)"
+                [class.type-slot--wrong]="isSlotWrong(index)"
+              >
+                @if (slotLetter(index); as letter) {
+                  <span class="type-slot__letter">{{ letter }}</span>
+                }
+              </div>
+            }
+          </div>
         </div>
 
         <input
@@ -112,26 +108,23 @@
           aria-label="Поле для набора слова"
         />
 
-        @if (answerStatus() === 'incorrect') {
-          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-        }
-
-        @if (answerStatus() === 'correct') {
-          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-        }
-
-        @if (answerStatus() === 'correct') {
-          <div class="play-actions">
-            <button
-              mat-flat-button
-              type="button"
-              class="play-actions__button play-actions__button--success"
-              (click)="nextTask()"
-            >
-              Дальше →
-            </button>
-          </div>
-        }
+        <div class="type-workspace__status">
+          @if (answerStatus() === 'incorrect') {
+            <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+          } @else if (answerStatus() === 'correct') {
+            <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+            <div class="play-actions">
+              <button
+                mat-flat-button
+                type="button"
+                class="play-actions__button play-actions__button--success"
+                (click)="nextTask()"
+              >
+                Дальше →
+              </button>
+            </div>
+          }
+        </div>
       </section>
     </div>
 

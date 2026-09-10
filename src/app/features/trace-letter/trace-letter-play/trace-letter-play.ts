@@ -232,7 +232,9 @@ export class TraceLetterPlay implements OnDestroy {
       return;
     }
 
-    this.transitionToIndex(index);
+    this.clearTransition();
+    this.padTransition.set('idle');
+    this.applyIndex(index);
   }
 
   nextTask(): void {

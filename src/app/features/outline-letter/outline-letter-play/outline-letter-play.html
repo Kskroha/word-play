@@ -99,9 +99,15 @@
           }
         </div>
 
-        @if (roundComplete()) {
-          <p class="trace-footer__message" role="status">🌟 Здорово! Всё верно!</p>
-        }
+        <p
+          class="trace-footer__message"
+          [class.trace-footer__message--visible]="roundComplete()"
+          role="status"
+        >
+          @if (roundComplete()) {
+            🌟 Здорово! Всё верно!
+          }
+        </p>
       </div>
     </div>
 

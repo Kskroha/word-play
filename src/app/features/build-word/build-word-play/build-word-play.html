@@ -166,16 +166,16 @@
           }
         </div>
 
-        @if (answerStatus() === 'incorrect') {
-          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-        }
+        <div class="play-feedback" aria-live="polite">
+          @if (answerStatus() === 'incorrect') {
+            <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+          } @else if (answerStatus() === 'correct') {
+            <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+          }
+        </div>
 
-        @if (answerStatus() === 'correct') {
-          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-        }
-
-        @if (answerStatus() === 'correct') {
-          <div class="play-actions">
+        <div class="play-actions">
+          @if (answerStatus() === 'correct') {
             <button
               mat-flat-button
               type="button"
@@ -184,8 +184,8 @@
             >
               Дальше →
             </button>
-          </div>
-        }
+          }
+        </div>
         </div>
       </section>
     </div>

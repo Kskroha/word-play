@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -24,7 +24,7 @@ type AnswerStatus = 'idle' | 'correct' | 'incorrect';
   templateUrl: './picture-choice-play.html',
   styleUrl: './picture-choice-play.scss',
 })
-export class PictureChoicePlay {
+export class PictureChoicePlay implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly settingsService = inject(GameSettingsService);
@@ -53,6 +53,7 @@ export class PictureChoicePlay {
   readonly choices = signal<CategoryItem[]>([]);
   readonly selectedChoiceId = signal<string | null>(null);
   readonly failedPictureIds = signal<Set<string>>(new Set());
+  private advanceTimeout: ReturnType<typeof setTimeout> | null = null;
 
   readonly pictureMode = computed(() => this.settingsService.settings().pictureMode);
 
@@ -101,6 +102,10 @@ export class PictureChoicePlay {
     });
   }
 
+  ngOnDestroy(): void {
+    this.clearAdvanceTimeout();
+  }
+
   getPictureUrl(item: CategoryItem): string | null {
     const category = this.category();
     if (!category) {
@@ -137,6 +142,7 @@ export class PictureChoicePlay {
     if (choice.id === item.id) {
       this.answerStatus.set('correct');
       this.sound.playCorrectThenSpeak(item.label);
+      this.scheduleAdvance();
       return;
     }
 
@@ -145,6 +151,8 @@ export class PictureChoicePlay {
   }
 
   nextTask(): void {
+    this.clearAdvanceTimeout();
+
     const total = this.playItems().length;
     if (total === 0) {
       return;
@@ -160,6 +168,7 @@ export class PictureChoicePlay {
   }
 
   restartCategory(): void {
+    this.clearAdvanceTimeout();
     this.refreshPlayItems();
     this.currentIndex.set(0);
     this.isCompleted.set(false);
@@ -199,6 +208,7 @@ export class PictureChoicePlay {
   }
 
   private setupRound(item: CategoryItem, pool: CategoryItem[]): void {
+    this.clearAdvanceTimeout();
     this.choices.set(pickPictureChoices(item, pool, this.maxChoices()));
     this.answerStatus.set('idle');
     this.selectedChoiceId.set(null);
@@ -212,5 +222,20 @@ export class PictureChoicePlay {
     }
 
     this.sound.speakWord(word);
+  }
+
+  private scheduleAdvance(): void {
+    this.clearAdvanceTimeout();
+    this.advanceTimeout = setTimeout(() => {
+      this.advanceTimeout = null;
+      this.nextTask();
+    }, 4200);
+  }
+
+  private clearAdvanceTimeout(): void {
+    if (this.advanceTimeout) {
+      clearTimeout(this.advanceTimeout);
+      this.advanceTimeout = null;
+    }
   }
 }

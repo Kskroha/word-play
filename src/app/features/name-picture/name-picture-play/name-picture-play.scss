@@ -3,7 +3,7 @@
 @use '../../../shared/styles/mic-button';
 
 :host .play-page:not(.play-page--empty):not(.play-page--completed) {
-  padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 4.75rem);
+  padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 8rem + env(safe-area-inset-bottom));
 }
 
 .play-picture__frame {
@@ -22,6 +22,14 @@
   font-weight: 800;
   line-height: 1.1;
   text-align: center;
+}
+
+.name-picture-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 24rem);
+  min-height: 6.5rem;
 }
 
 .name-picture-controls {

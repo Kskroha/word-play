@@ -108,12 +108,16 @@
           aria-label="Поле для набора слова"
         />
 
-        <div class="type-workspace__status">
-          @if (answerStatus() === 'incorrect') {
-            <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-          } @else if (answerStatus() === 'correct') {
-            <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-            <div class="play-actions">
+        <div class="type-workspace__status" aria-live="polite">
+          <div class="play-feedback">
+            @if (answerStatus() === 'incorrect') {
+              <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+            } @else if (answerStatus() === 'correct') {
+              <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+            }
+          </div>
+          <div class="play-actions">
+            @if (answerStatus() === 'correct') {
               <button
                 mat-flat-button
                 type="button"
@@ -122,14 +126,16 @@
               >
                 Дальше →
               </button>
-            </div>
-          }
+            }
+          </div>
         </div>
       </section>
     </div>
 
-    <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
-      Пропустить
-    </button>
+    @if (answerStatus() !== 'correct') {
+      <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
+        Пропустить
+      </button>
+    }
   </div>
 }

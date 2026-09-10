@@ -312,12 +312,18 @@ $trace-content-width: min(100%, 34rem);
 .trace-footer__message {
   margin: clamp(0.85rem, 2dvh, 1.35rem) 0 0;
   width: 100%;
+  min-height: 1.25em;
   flex-shrink: 0;
   font-size: clamp(0.88rem, 2.4vw, 1rem);
   font-weight: 800;
   line-height: 1.2;
   text-align: center;
   color: #4a8f62;
+  visibility: hidden;
+}
+
+.trace-footer__message--visible {
+  visibility: visible;
 }
 
 @media (max-width: 768px) {

@@ -79,59 +79,59 @@
         }
       </div>
 
-      @if (answerStatus() === 'correct') {
-        <p class="name-picture-word" role="status" aria-live="polite">{{ item.label }}</p>
-      }
-
-      @if (answerStatus() !== 'correct') {
-        <div class="name-picture-controls">
-          @if (speechSupported()) {
-            @if (heardText()) {
-              <p class="name-picture-heard">Я слышу: «{{ heardText() }}»</p>
+      <div class="name-picture-status">
+        @if (answerStatus() === 'correct') {
+          <p class="name-picture-word" role="status">{{ item.label }}</p>
+        } @else {
+          <div class="name-picture-controls">
+            @if (speechSupported()) {
+              @if (heardText()) {
+                <p class="name-picture-heard">Я слышу: «{{ heardText() }}»</p>
+              }
+            } @else {
+              <p class="name-picture-fallback-note">
+                В этом браузере нет распознавания речи. Можно ввести слово вручную.
+              </p>
+              <div class="name-picture-fallback">
+                <input
+                  class="name-picture-fallback__input"
+                  type="text"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  inputmode="text"
+                  [value]="typedFallback()"
+                  (input)="onTypedFallbackInput($event)"
+                  aria-label="Введи слово вручную"
+                />
+                <button
+                  mat-flat-button
+                  type="button"
+                  class="name-picture-fallback__button"
+                  (click)="submitTypedAnswer()"
+                >
+                  Проверить
+                </button>
+              </div>
             }
-          } @else {
-            <p class="name-picture-fallback-note">
-              В этом браузере нет распознавания речи. Можно ввести слово вручную.
-            </p>
-            <div class="name-picture-fallback">
-              <input
-                class="name-picture-fallback__input"
-                type="text"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                inputmode="text"
-                [value]="typedFallback()"
-                (input)="onTypedFallbackInput($event)"
-                aria-label="Введи слово вручную"
-              />
-              <button
-                mat-flat-button
-                type="button"
-                class="name-picture-fallback__button"
-                (click)="submitTypedAnswer()"
-              >
-                Проверить
-              </button>
-            </div>
-          }
 
-          @if (speechError()) {
-            <p class="name-picture-error" role="alert">{{ speechError() }}</p>
-          }
-        </div>
-      }
+            @if (speechError()) {
+              <p class="name-picture-error" role="alert">{{ speechError() }}</p>
+            }
+          </div>
+        }
+      </div>
 
-      @if (answerStatus() === 'incorrect') {
-        <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-      }
+      <div class="play-feedback" aria-live="polite">
+        @if (answerStatus() === 'incorrect') {
+          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+        } @else if (answerStatus() === 'correct') {
+          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+        }
+      </div>
 
-      @if (answerStatus() === 'correct') {
-        <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-      }
-
-      @if (answerStatus() === 'correct') {
-        <div class="play-actions">
+      <div class="play-actions">
+        @if (answerStatus() === 'correct') {
           <button
             mat-flat-button
             type="button"
@@ -140,8 +140,8 @@
           >
             Дальше →
           </button>
-        </div>
-      }
+        }
+      </div>
     </div>
 
     @if (answerStatus() !== 'correct' && speechSupported()) {
@@ -163,8 +163,10 @@
       </div>
     }
 
-    <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
-      Пропустить
-    </button>
+    @if (answerStatus() !== 'correct') {
+      <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
+        Пропустить
+      </button>
+    }
   </div>
 }

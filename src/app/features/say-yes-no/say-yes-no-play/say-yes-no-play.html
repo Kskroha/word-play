@@ -104,27 +104,21 @@
         </div>
       </div>
 
-      @if (answerStatus() === 'incorrect') {
-        <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-      }
-
-      @if (answerStatus() === 'correct') {
-        <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-      }
-
-      @if (answerStatus() !== 'correct' && heardText()) {
-        <p class="say-yes-no-heard">Я слышу: «{{ heardText() }}»</p>
-      }
-
-      @if (answerStatus() !== 'correct' && speechError()) {
-        <p class="say-yes-no-error" role="alert">{{ speechError() }}</p>
-      }
-
-      @if (answerStatus() !== 'correct' && !speechSupported()) {
-        <p class="say-yes-no-fallback-note" role="alert">
-          Эта игра работает только голосом. Открой её в Chrome или Safari и разреши доступ к микрофону.
-        </p>
-      }
+      <div class="play-feedback" aria-live="polite">
+        @if (answerStatus() === 'incorrect') {
+          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+        } @else if (answerStatus() === 'correct') {
+          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+        } @else if (heardText()) {
+          <p class="say-yes-no-heard">Я слышу: «{{ heardText() }}»</p>
+        } @else if (speechError()) {
+          <p class="say-yes-no-error" role="alert">{{ speechError() }}</p>
+        } @else if (!speechSupported()) {
+          <p class="say-yes-no-fallback-note" role="alert">
+            Эта игра работает только голосом. Открой её в Chrome или Safari и разреши доступ к микрофону.
+          </p>
+        }
+      </div>
     </div>
 
     @if (answerStatus() !== 'correct' && speechSupported()) {

@@ -4,7 +4,11 @@
 @use '../../../shared/styles/yes-no-button';
 
 :host .play-page:not(.play-page--empty):not(.play-page--completed) {
-  padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 4.75rem);
+  padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 8rem + env(safe-area-inset-bottom));
+}
+
+.play-feedback {
+  min-height: 4.5rem;
 }
 
 .yes-no-actions--hint {

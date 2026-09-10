@@ -108,17 +108,19 @@
         </button>
       </div>
 
-      @if (answerStatus() === 'incorrect') {
-        <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
-      }
-
-      @if (answerStatus() === 'correct') {
-        <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-      }
+      <div class="play-feedback" aria-live="polite">
+        @if (answerStatus() === 'incorrect') {
+          <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
+        } @else if (answerStatus() === 'correct') {
+          <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
+        }
+      </div>
     </div>
 
-    <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
-      Пропустить
-    </button>
+    @if (answerStatus() !== 'correct') {
+      <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
+        Пропустить
+      </button>
+    }
   </div>
 }

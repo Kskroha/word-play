@@ -19,8 +19,8 @@ import {
 export type LetterAlphabetId = 'ru' | 'en';
 
 export const LETTER_ALPHABET_OPTIONS: { id: LetterAlphabetId; label: string }[] = [
-  { id: 'ru', label: 'А-Я' },
-  { id: 'en', label: 'A-Z' },
+  { id: 'ru', label: 'АБВ' },
+  { id: 'en', label: 'ABC' },
 ];
 
 const CYRILLIC_LETTERS: { id: string; letter: string }[] = [

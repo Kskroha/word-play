@@ -1,0 +1,65 @@
+.letter-picker__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 800;
+  color: var(--wp-heading);
+  text-align: center;
+}
+
+.letter-picker__content {
+  padding-top: 0.25rem !important;
+}
+
+.letter-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: 0.55rem;
+}
+
+.letter-picker__choice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 2px solid var(--wp-border);
+  border-radius: 0.7rem;
+  background: #ffffff;
+  color: var(--wp-heading);
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(.letter-picker__choice--current) {
+    transform: translateY(-1px);
+    border-color: var(--wp-purple);
+    background: var(--wp-purple-soft);
+  }
+
+  &--current {
+    border-color: transparent;
+    background: var(--wp-purple);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(139, 111, 192, 0.28);
+
+    &:hover {
+      transform: translateY(-1px);
+      background: var(--wp-purple-deep);
+      box-shadow: 0 4px 14px rgba(139, 111, 192, 0.34);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-picker__choice {
+    transition: none;
+  }
+}

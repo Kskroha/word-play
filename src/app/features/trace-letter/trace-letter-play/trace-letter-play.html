@@ -19,42 +19,29 @@
   </div>
 } @else if (currentRound(); as round) {
   <div class="play-page">
-    <header class="play-header">
+    <header class="play-header play-header--minimal">
       <button mat-stroked-button type="button" class="play-header__back" (click)="goBackToLetterGames()">
         ← Назад
       </button>
 
-      <div class="play-header__main">
-        <h1 class="play-header__category play-header__category--{{ category()!.id }}">
-          {{ category()!.title }}
-        </h1>
-        <div
-          class="play-header__progress-track"
-          role="progressbar"
-          [attr.aria-valuenow]="progressPercent()"
-          aria-valuemin="0"
-          aria-valuemax="100"
+      <div class="play-header__alphabet">
+        <mat-button-toggle-group
+          class="trace-alphabet-toggle"
+          hideSingleSelectionIndicator
+          [value]="alphabet()"
+          (change)="selectAlphabet($event.value)"
+          aria-label="Выбор алфавита"
         >
-          <div class="play-header__progress-fill" [style.width.%]="progressPercent()"></div>
-        </div>
-        <span class="play-header__progress-label">{{ progressLabel() }}</span>
+          @for (option of alphabetOptions; track option.id) {
+            <mat-button-toggle [value]="option.id">
+              {{ option.label }}
+            </mat-button-toggle>
+          }
+        </mat-button-toggle-group>
       </div>
     </header>
 
     <div class="trace-main">
-      <mat-button-toggle-group
-        class="trace-alphabet-toggle"
-        [value]="alphabet()"
-        (change)="selectAlphabet($event.value)"
-        aria-label="Выбор алфавита"
-      >
-        @for (option of alphabetOptions; track option.id) {
-          <mat-button-toggle [value]="option.id">
-            {{ option.label }}
-          </mat-button-toggle>
-        }
-      </mat-button-toggle-group>
-
       <p class="trace-prompt">Закрась букву</p>
 
       <div class="trace-pad-wrap">
@@ -73,6 +60,16 @@
             (pointerup)="onPointerUp($event)"
             (pointercancel)="onPointerUp($event)"
           ></canvas>
+
+          <button
+            type="button"
+            class="trace-letter-picker"
+            [attr.aria-label]="'Выбрать букву. Сейчас: ' + round.letter"
+            [disabled]="roundComplete()"
+            (click)="openLetterPicker()"
+          >
+            <span class="trace-letter-picker__letter" aria-hidden="true">{{ round.letter }}</span>
+          </button>
         </div>
       </div>
 
@@ -94,16 +91,6 @@
             (click)="selectColor(color.id)"
           ></button>
         }
-
-        <button
-          mat-stroked-button
-          type="button"
-          class="trace-clear"
-          (click)="clearPad()"
-          [disabled]="!hasPainted() || roundComplete()"
-        >
-          Стереть
-        </button>
       </div>
 
       <div class="trace-footer">

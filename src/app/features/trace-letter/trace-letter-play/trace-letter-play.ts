@@ -11,7 +11,9 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
+import { LetterPickerDialog } from '../../../shared/ui/letter-picker-dialog/letter-picker-dialog';
 import { getCategoryById, LETTER_ALPHABET_OPTIONS, LetterAlphabetId } from '../../../core/data/categories';
 import {
   findTraceBrushColorId,
@@ -29,6 +31,7 @@ import { LetterTracePad } from '../../../core/utils/letter-trace-pad';
 })
 export class TraceLetterPlay implements OnDestroy {
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   private readonly guideCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('guideCanvas');
   private readonly paintCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('paintCanvas');
@@ -43,7 +46,6 @@ export class TraceLetterPlay implements OnDestroy {
   readonly alphabetOptions = LETTER_ALPHABET_OPTIONS;
   readonly selectedColorId = signal(TRACE_BRUSH_COLORS[0]!.id);
   readonly alphabet = signal<LetterAlphabetId>('ru');
-  readonly hasPainted = signal(false);
   readonly roundComplete = signal(false);
 
   readonly category = computed(() => getCategoryById('letters'));
@@ -61,24 +63,6 @@ export class TraceLetterPlay implements OnDestroy {
 
   readonly currentRound = computed(() => {
     return this.rounds()[this.currentIndex()];
-  });
-
-  readonly progressLabel = computed(() => {
-    const total = this.rounds().length;
-    if (total === 0) {
-      return '';
-    }
-
-    return `${this.currentIndex() + 1} / ${total}`;
-  });
-
-  readonly progressPercent = computed(() => {
-    const total = this.rounds().length;
-    if (total === 0) {
-      return 0;
-    }
-
-    return ((this.currentIndex() + 1) / total) * 100;
   });
 
   constructor() {
@@ -173,7 +157,6 @@ export class TraceLetterPlay implements OnDestroy {
     this.isPointerActive = true;
     this.paintCanvasRef()?.nativeElement.setPointerCapture(event.pointerId);
     this.pad?.handlePointerDown(event.clientX, event.clientY);
-    this.hasPainted.set(true);
     this.scheduleSuccessCheck();
   }
 
@@ -203,11 +186,36 @@ export class TraceLetterPlay implements OnDestroy {
     this.scheduleSuccessCheck(true);
   }
 
-  clearPad(): void {
+  openLetterPicker(): void {
+    const rounds = this.rounds();
+    if (rounds.length === 0) {
+      return;
+    }
+
+    this.dialog
+      .open(LetterPickerDialog, {
+        width: 'min(92vw, 36rem)',
+        maxHeight: '90dvh',
+        autoFocus: 'first-tabbable',
+        data: {
+          letters: rounds.map((round) => round.letter),
+          currentIndex: this.currentIndex(),
+        },
+      })
+      .afterClosed()
+      .subscribe((index: number | undefined) => {
+        if (index == null || index === this.currentIndex()) {
+          return;
+        }
+
+        this.goToLetter(index);
+      });
+  }
+
+  goToLetter(index: number): void {
     this.isPointerActive = false;
-    this.pad?.clearPaint();
-    this.hasPainted.set(false);
-    this.roundComplete.set(false);
+    this.isCompleted.set(false);
+    this.currentIndex.set(index);
   }
 
   nextTask(): void {
@@ -233,7 +241,6 @@ export class TraceLetterPlay implements OnDestroy {
 
   private setupRound(round: LetterTraceRound): void {
     this.isPointerActive = false;
-    this.hasPainted.set(false);
     this.roundComplete.set(false);
     this.pad?.setLetter(round.letter, round.guideColor);
     this.syncBrushColorToGuide(round.guideColor);
@@ -287,7 +294,6 @@ export class TraceLetterPlay implements OnDestroy {
     }
 
     this.pad.setCelebrating(true);
-    this.hasPainted.set(true);
     this.roundComplete.set(true);
   }
 }

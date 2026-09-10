@@ -13,5 +13,5 @@ export class PageShell {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly showBack = input(true);
-  readonly backLink = input<string | string[]>('/');
+  readonly backLink = input<string | string[]>(['/categories']);
 }

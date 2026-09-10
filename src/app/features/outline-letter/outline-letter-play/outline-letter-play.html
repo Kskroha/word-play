@@ -24,6 +24,22 @@
         ← Назад
       </button>
 
+      <div class="play-header__alphabet">
+        <mat-button-toggle-group
+          class="trace-alphabet-toggle"
+          hideSingleSelectionIndicator
+          [value]="alphabet()"
+          (change)="selectAlphabet($event.value)"
+          aria-label="Выбор алфавита"
+        >
+          @for (option of alphabetOptions; track option.id) {
+            <mat-button-toggle [value]="option.id">
+              {{ option.label }}
+            </mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </div>
+
       <div class="play-header__main">
         <h1 class="play-header__category play-header__category--{{ category()!.id }}">
           {{ category()!.title }}
@@ -42,19 +58,6 @@
     </header>
 
     <div class="trace-main">
-      <mat-button-toggle-group
-        class="trace-alphabet-toggle"
-        [value]="alphabet()"
-        (change)="selectAlphabet($event.value)"
-        aria-label="Выбор алфавита"
-      >
-        @for (option of alphabetOptions; track option.id) {
-          <mat-button-toggle [value]="option.id">
-            {{ option.label }}
-          </mat-button-toggle>
-        }
-      </mat-button-toggle-group>
-
       <p class="trace-prompt">Напиши букву</p>
 
       <div class="trace-pad-wrap">
@@ -73,6 +76,16 @@
             (pointerup)="onPointerUp($event)"
             (pointercancel)="onPointerUp($event)"
           ></canvas>
+
+          <button
+            type="button"
+            class="trace-letter-picker"
+            [attr.aria-label]="'Выбрать букву. Сейчас: ' + round.letter"
+            [disabled]="roundComplete()"
+            (click)="openLetterPicker()"
+          >
+            <span class="trace-letter-picker__letter" aria-hidden="true">{{ round.letter }}</span>
+          </button>
         </div>
       </div>
 

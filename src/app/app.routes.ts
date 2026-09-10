@@ -3,8 +3,8 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () =>
-      import('./features/welcome/welcome').then((m) => m.Welcome),
+    redirectTo: 'categories',
+    pathMatch: 'full',
   },
   {
     path: 'categories',
@@ -78,6 +78,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'categories',
   },
 ];

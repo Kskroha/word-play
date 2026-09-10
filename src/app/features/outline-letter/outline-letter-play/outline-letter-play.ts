@@ -11,7 +11,9 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
+import { LetterPickerDialog } from '../../../shared/ui/letter-picker-dialog/letter-picker-dialog';
 import { getCategoryById, LETTER_ALPHABET_OPTIONS, LetterAlphabetId } from '../../../core/data/categories';
 import { LetterOutlinePad } from '../../../core/utils/letter-outline-pad';
 import {
@@ -29,6 +31,7 @@ import {
 })
 export class OutlineLetterPlay implements OnDestroy {
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   private readonly guideCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('guideCanvas');
   private readonly paintCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('paintCanvas');
@@ -207,6 +210,38 @@ export class OutlineLetterPlay implements OnDestroy {
     this.pad?.clearPaint();
     this.hasPainted.set(false);
     this.roundComplete.set(false);
+  }
+
+  openLetterPicker(): void {
+    const rounds = this.rounds();
+    if (rounds.length === 0) {
+      return;
+    }
+
+    this.dialog
+      .open(LetterPickerDialog, {
+        width: 'min(92vw, 36rem)',
+        maxHeight: '90dvh',
+        autoFocus: 'first-tabbable',
+        data: {
+          letters: rounds.map((round) => round.letter),
+          currentIndex: this.currentIndex(),
+        },
+      })
+      .afterClosed()
+      .subscribe((index: number | undefined) => {
+        if (index == null || index === this.currentIndex()) {
+          return;
+        }
+
+        this.goToLetter(index);
+      });
+  }
+
+  goToLetter(index: number): void {
+    this.isPointerActive = false;
+    this.isCompleted.set(false);
+    this.currentIndex.set(index);
   }
 
   nextTask(): void {

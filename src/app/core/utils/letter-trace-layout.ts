@@ -16,7 +16,7 @@ export function getLetterLayout(
   height: number,
   fontWeight: number = PAINT_LETTER_FONT_WEIGHT,
 ): LetterLayout {
-  const fontSize = Math.min(width, height) * 0.68;
+  const fontSize = Math.min(width, height) * 0.85;
   const centerX = width / 2;
   const centerY = height / 2;
 

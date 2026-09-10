@@ -1,4 +1,13 @@
-<app-page-shell title="Что будем изучать?">
+<a
+  class="category-settings"
+  routerLink="/parent"
+  mat-icon-button
+  aria-label="Настройки для родителя"
+>
+  <mat-icon aria-hidden="true">settings</mat-icon>
+</a>
+
+<app-page-shell title="Что будем изучать?" [showBack]="false">
   <div class="category-list">
     @for (category of categories; track category.id) {
       <a

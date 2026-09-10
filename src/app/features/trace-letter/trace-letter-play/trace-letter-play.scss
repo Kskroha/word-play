@@ -3,6 +3,7 @@
 $trace-content-width: min(100%, 34rem);
 
 .play-header {
+  --trace-control-height: 2.375rem;
   width: $trace-content-width;
   max-width: $trace-content-width;
   margin-inline: auto;
@@ -11,6 +12,17 @@ $trace-content-width: min(100%, 34rem);
 .play-header__main {
   padding: 2.4rem 0 0;
   align-items: center;
+}
+
+.play-header--minimal {
+  min-height: var(--trace-control-height);
+}
+
+.play-header__alphabet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
 }
 
 .play-header__category,
@@ -26,14 +38,13 @@ $trace-content-width: min(100%, 34rem);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: clamp(0.65rem, 1.8dvh, 1.1rem);
   width: $trace-content-width;
   max-width: $trace-content-width;
-  margin: 0 auto;
+  margin: clamp(1.25rem, 3.5dvh, 2rem) auto 0;
   min-height: 0;
   overflow: hidden;
-  padding-bottom: 2.85rem;
   box-sizing: border-box;
 }
 
@@ -44,17 +55,78 @@ $trace-content-width: min(100%, 34rem);
   line-height: 1.2;
   text-align: center;
   color: var(--wp-heading);
+  margin-bottom: 20px;
 }
 
 .trace-alphabet-toggle {
-  border-radius: 999px !important;
-  overflow: hidden;
-  border: var(--wp-dashed) !important;
-  background: var(--wp-surface) !important;
+  --trace-alphabet-accent: var(--wp-purple);
+  --mat-button-toggle-height: calc(var(--trace-control-height) - 0.35rem);
+  height: var(--trace-control-height);
+  padding: 0.2rem;
+  gap: 0.2rem;
+  border: none !important;
+  border-radius: 0.7rem !important;
+  background: var(--wp-purple-soft) !important;
+  box-shadow: none !important;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .trace-alphabet-toggle {
+  &.mat-button-toggle-group-appearance-standard {
+    border: none;
+    box-shadow: none;
+  }
+
+  .mat-button-toggle {
+    height: 100%;
+    min-width: calc(var(--trace-control-height) + 0.15rem);
+    border: none !important;
+    border-radius: 0.55rem !important;
+    background: transparent !important;
+    color: var(--wp-text-muted);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .mat-button-toggle-group-appearance-standard
+    .mat-button-toggle-appearance-standard
+    + .mat-button-toggle-appearance-standard {
+    border-left: none !important;
+  }
+
+  .mat-button-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-radius: 0.55rem;
+  }
 
   .mat-button-toggle-label-content {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: var(--mat-button-toggle-height) !important;
     font-weight: 800;
-    padding-inline: 1rem !important;
+    line-height: 1 !important;
+    padding-block: 0 !important;
+    padding-inline: 0.65rem !important;
+    color: inherit;
+  }
+
+  .mat-button-toggle:not(.mat-button-toggle-checked):hover {
+    color: var(--wp-purple-deep) !important;
+  }
+
+  .mat-button-toggle-checked,
+  .mat-button-toggle-appearance-standard.mat-button-toggle-checked {
+    background: var(--trace-alphabet-accent) !important;
+    color: #ffffff !important;
+
+    .mat-button-toggle-label-content {
+      color: #ffffff !important;
+    }
   }
 }
 
@@ -70,10 +142,10 @@ $trace-content-width: min(100%, 34rem);
 
 .trace-pad {
   position: relative;
-  width: 100%;
-  aspect-ratio: 5 / 4;
-  max-height: min(52dvh, 28rem);
-  border: 3px dashed var(--wp-border-dashed);
+  width: 62%;
+  aspect-ratio: 1;
+  max-height: min(38dvh, 18rem);
+  border: 3px solid var(--wp-border);
   border-radius: var(--wp-radius-md);
   overflow: hidden;
   box-shadow: 0 6px 20px rgba(74, 69, 96, 0.08);
@@ -111,6 +183,9 @@ $trace-content-width: min(100%, 34rem);
   justify-content: center;
   gap: 0.55rem;
   width: 100%;
+  margin-top: auto;
+  padding-top: 20px;
+  flex-shrink: 0;
 }
 
 .trace-tools--locked {
@@ -146,24 +221,66 @@ $trace-content-width: min(100%, 34rem);
   }
 }
 
-.trace-clear {
-  min-height: 42px !important;
-  border-radius: 999px !important;
-  font-weight: 800 !important;
+.trace-letter-picker {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(1.75rem, 5.5vw, 2rem);
+  height: clamp(1.75rem, 5.5vw, 2rem);
+  padding: 0;
+  border: none;
+  border-radius: 0.55rem;
+  background: #ddd5eb;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(139, 111, 192, 0.16);
+  transform: translate(0, 0);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translate(0, -1px);
+    background: #cbbfe0;
+    box-shadow: 0 3px 10px rgba(139, 111, 192, 0.22);
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(0, 0);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.72;
+  }
+}
+
+.trace-letter-picker__letter {
+  font-size: clamp(0.82rem, 2.6vw, 0.95rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--wp-purple-deep);
 }
 
 .trace-footer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.55rem;
-  min-height: 2.5rem;
+  width: 100%;
+  margin-top: clamp(0.85rem, 2dvh, 1.35rem);
   padding: 0 0.15rem;
+  flex-shrink: 0;
   pointer-events: none;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .trace-footer__message {
@@ -198,10 +315,17 @@ $trace-content-width: min(100%, 34rem);
   }
 
   .play-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 0.35rem;
+    flex-shrink: 0;
+    margin-bottom: clamp(0.5rem, 1.5dvh, 0.85rem);
+    padding-bottom: clamp(0.35rem, 1dvh, 0.65rem);
+    background: var(--wp-background);
   }
 
   .play-header__back {
@@ -214,22 +338,83 @@ $trace-content-width: min(100%, 34rem);
   }
 
   .trace-main {
+    flex: 0 0 auto;
     justify-content: flex-start;
     overflow: visible;
-    padding-bottom: 3rem;
+    margin-top: clamp(1rem, 3dvh, 1.75rem);
+  }
+
+  .trace-footer {
+    margin-top: clamp(1.15rem, 3dvh, 1.75rem);
+  }
+
+  .trace-pad-wrap {
+    flex: 0 0 auto;
+    padding-top: clamp(0.5rem, 1.5dvh, 1rem);
   }
 
   .trace-pad {
-    max-height: min(44dvh, 22rem);
+    width: min(72%, 16rem);
+    max-height: min(35dvh, 16rem);
+  }
+
+  .play-header {
+    --trace-control-height: 2.125rem;
+  }
+
+  :host ::ng-deep .trace-alphabet-toggle .mat-button-toggle-label-content {
+    padding-inline: 0.75rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .trace-tools {
+    margin-top: 0;
+    padding-top: clamp(0.75rem, 2dvh, 1.25rem);
+    gap: 0.5rem;
+  }
+
+  .trace-color {
+    flex: 0 0 auto;
+    width: clamp(2.5rem, 12vw, 2.75rem);
+    height: clamp(2.5rem, 12vw, 2.75rem);
+  }
+
+  .trace-letter-picker {
+    width: clamp(1.65rem, 5vw, 1.85rem);
+    height: clamp(1.65rem, 5vw, 1.85rem);
+    right: 0.45rem;
+    bottom: 0.45rem;
+  }
+
+  .trace-clear {
+    min-height: 0 !important;
+    height: auto !important;
+    aspect-ratio: 1;
+    padding: 0 0.2rem !important;
+    font-size: 0.62rem !important;
+    line-height: 1.05 !important;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .trace-footer__next {
+    min-height: 34px !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.82rem !important;
   }
 
   .play-skip {
+    min-height: 40px !important;
+    padding: 0 1rem !important;
+    font-size: 0.88rem !important;
     bottom: calc(0.65rem + env(safe-area-inset-bottom));
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .trace-color {
+  .trace-color,
+  .trace-letter-picker,
+  :host ::ng-deep .trace-alphabet-toggle .mat-button-toggle {
     transition: none;
   }
 }

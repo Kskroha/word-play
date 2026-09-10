@@ -1,0 +1,21 @@
+<h2 mat-dialog-title class="letter-picker__title">Выбери букву</h2>
+
+<mat-dialog-content class="letter-picker__content">
+  <div class="letter-picker__grid" role="listbox" aria-label="Список букв">
+    @for (letter of data.letters; track $index) {
+      <button
+        type="button"
+        class="letter-picker__choice"
+        [class.letter-picker__choice--current]="$index === data.currentIndex"
+        [attr.aria-selected]="$index === data.currentIndex"
+        (click)="selectLetter($index)"
+      >
+        {{ letter }}
+      </button>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button type="button" (click)="close()">Закрыть</button>
+</mat-dialog-actions>

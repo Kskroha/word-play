@@ -1,4 +1,4 @@
-export type SectionId = 'letters' | 'vocabulary';
+export type SectionId = 'letters' | 'vocabulary' | 'name-picture';
 
 export interface AppSection {
   id: SectionId;

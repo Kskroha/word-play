@@ -35,6 +35,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'name-picture',
+    loadComponent: () =>
+      import('./features/name-picture/theme-select/theme-select').then(
+        (m) => m.NamePictureThemeSelect,
+      ),
+  },
+  {
+    path: 'name-picture/:categoryId',
+    loadComponent: () =>
+      import('./features/name-picture/name-picture-play/name-picture-play').then(
+        (m) => m.NamePicturePlay,
+      ),
+  },
+  {
     path: 'vocabulary',
     loadComponent: () =>
       import('./features/vocabulary/theme-select/theme-select').then(

@@ -25,7 +25,7 @@ export class LetterTracePad {
 
   brushColor = TRACE_BRUSH_COLORS[0]!.color;
   guideColor = TRACE_BRUSH_COLORS[2]!.color;
-  brushSize = 48;
+  brushSize = 64;
 
   constructor(
     private readonly guideCanvas: HTMLCanvasElement,
@@ -59,6 +59,7 @@ export class LetterTracePad {
 
     this.width = nextWidth;
     this.height = nextHeight;
+    this.syncBrushSize();
 
     for (const canvas of [this.guideCanvas, this.paintCanvas, this.maskCanvas, this.outlineCanvas]) {
       canvas.width = nextWidth;
@@ -139,6 +140,15 @@ export class LetterTracePad {
 
   handlePointerUp(): void {
     this.isDrawing = false;
+  }
+
+  private syncBrushSize(): void {
+    if (this.width <= 0 || this.height <= 0) {
+      return;
+    }
+
+    const canvasSize = Math.min(this.width, this.height);
+    this.brushSize = Math.max(canvasSize * 0.14, 72);
   }
 
   private getCanvasPoint(clientX: number, clientY: number): { x: number; y: number } {
@@ -229,12 +239,14 @@ export class LetterTracePad {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
 
-    ctx.fillStyle = traceColorWithAlpha(this.guideColor, 0.34);
+    ctx.fillStyle = traceColorWithAlpha(this.guideColor, 0.22);
     ctx.fillText(this.letter, x, y);
 
-    ctx.lineWidth = Math.max(fontSize * 0.028, 4);
-    ctx.strokeStyle = this.guideColor;
-    ctx.setLineDash([Math.max(fontSize * 0.06, 10), Math.max(fontSize * 0.04, 7)]);
+    ctx.lineWidth = Math.max(fontSize * 0.016, 2.5);
+    ctx.strokeStyle = traceColorWithAlpha(this.guideColor, 0.48);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.setLineDash([Math.max(fontSize * 0.045, 7), Math.max(fontSize * 0.032, 5)]);
     ctx.strokeText(this.letter, x, y);
     ctx.setLineDash([]);
     ctx.restore();

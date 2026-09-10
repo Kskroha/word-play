@@ -27,7 +27,7 @@ export const TRACE_BRUSH_COLORS: TraceBrushColor[] = [
 ];
 
 /** Доля закрашенной площади буквы для успеха. */
-export const TRACE_MIN_FILL_RATIO = 0.95;
+export const TRACE_MIN_FILL_RATIO = 0.97;
 
 /** Доля пройденного контура буквы для успеха в игре «Закрась букву». */
 export const TRACE_MIN_OUTLINE_RATIO = 0.55;
@@ -96,7 +96,8 @@ export function getLetterPaintRatio(
   width: number,
   height: number,
 ): number {
-  return getMaskCoverageRatio(paintCtx, maskCtx, width, height);
+  // Считаем только «тело» буквы, без полупрозрачных пикселей сглаживания по краям.
+  return getMaskCoverageRatio(paintCtx, maskCtx, width, height, 128);
 }
 
 export function getLetterOutlineRatio(
@@ -113,6 +114,7 @@ function getMaskCoverageRatio(
   referenceCtx: CanvasRenderingContext2D,
   width: number,
   height: number,
+  referenceAlphaMin = 16,
 ): number {
   const referenceData = referenceCtx.getImageData(0, 0, width, height).data;
   const paintData = paintCtx.getImageData(0, 0, width, height).data;
@@ -121,7 +123,7 @@ function getMaskCoverageRatio(
   let coveredPixels = 0;
 
   for (let i = 3; i < referenceData.length; i += 4) {
-    if (referenceData[i]! > 16) {
+    if (referenceData[i]! >= referenceAlphaMin) {
       referencePixels += 1;
       if (paintData[i]! > 16) {
         coveredPixels += 1;

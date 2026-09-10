@@ -44,7 +44,7 @@
 
     <div class="play-layout">
       <section class="play-picture" aria-label="Изображение задания">
-        <div class="play-picture__frame">
+        <div class="play-picture__frame" (click)="speakPrompt()">
           <div class="play-picture__mask">
             @if (usePicture()) {
               <img

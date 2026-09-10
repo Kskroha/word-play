@@ -67,10 +67,8 @@ export const BIRD_ITEMS: CategoryItem[] = [
   word('bird', 'птица', '🐦'),
   word('crow', 'ворона', '🐦‍⬛'),
   word('hatching', 'птенец', '🐣'),
-  word('feather', 'перо', '🪶'),
   word('nest', 'гнездо', '🪹'),
   word('egg', 'яйцо', '🥚'),
-  word('bat', 'летучая мышь', '🦇', ['летучая', 'мышь']),
 ];
 
 export const INSECT_ITEMS: CategoryItem[] = [
@@ -88,12 +86,7 @@ export const INSECT_ITEMS: CategoryItem[] = [
   word('worm', 'червяк', '🪱'),
   word('snail', 'улитка', '🐌'),
   word('scorpion', 'скорпион', '🦂'),
-  word('cricket', 'сверчок', '🦗'),
-  word('honeybee', 'пчёлка', '🐝'),
-  word('bug', 'насекомое', '🐞'),
   word('web', 'паутина', '🕸️'),
-  word('hive', 'улей', '🍯'),
-  word('firefly', 'светлячок', '✨'),
 ];
 
 export const FRUIT_ITEMS: CategoryItem[] = [
@@ -114,9 +107,7 @@ export const FRUIT_ITEMS: CategoryItem[] = [
   word('melon', 'дыня', '🍈'),
   word('coconut', 'кокос', '🥥'),
   word('avocado', 'авокадо', '🥑'),
-  word('tomato-fruit', 'томат', '🍅'),
   word('green-apple', 'зелёное яблоко', '🍏', ['зелёное', 'яблоко']),
-  word('tangerine', 'мандарин', '🍊'),
 ];
 
 export const VEGETABLE_ITEMS: CategoryItem[] = [
@@ -133,9 +124,6 @@ export const VEGETABLE_ITEMS: CategoryItem[] = [
   word('mushroom', 'гриб', '🍄'),
   word('garlic', 'чеснок', '🧄'),
   word('peas', 'горох', '🫛'),
-  word('cabbage', 'капуста', '🥬'),
-  word('radish', 'редиска', '🥕'),
-  word('beet', 'свёкла', '🍠'),
   word('pumpkin', 'тыква', '🎃'),
   word('ginger', 'имбирь', '🫚'),
   word('beans', 'фасоль', '🫘'),
@@ -149,8 +137,8 @@ export const FOOD_ITEMS: CategoryItem[] = [
   word('milk', 'молоко', '🥛'),
   word('pizza', 'пицца', '🍕'),
   word('burger', 'бургер', '🍔'),
-  word('hotdog', 'сосиска', '🌭'),
-  word('fries', 'картошка', '🍟'),
+  word('hotdog', 'хот-дог', '🌭'),
+  word('fries', 'фри', '🍟'),
   word('soup', 'суп', '🍲'),
   word('cake', 'торт', '🎂'),
   word('cookie', 'печенье', '🍪'),
@@ -171,8 +159,8 @@ export const TRANSPORT_ITEMS: CategoryItem[] = [
   word('trolleybus', 'троллейбус', '🚎'),
   word('taxi', 'такси', '🚕'),
   word('police-car', 'полиция', '🚓'),
-  word('ambulance', 'скорая', '🚑'),
-  word('fire-truck', 'пожарная', '🚒'),
+  word('ambulance', 'скорая помощь', '🚑', ['скорая', 'помощь']),
+  word('fire-truck', 'пожарная машина', '🚒', ['пожарная', 'машина']),
   word('truck', 'грузовик', '🚚'),
   word('train', 'поезд', '🚂'),
   word('metro', 'метро', '🚇'),
@@ -185,7 +173,7 @@ export const TRANSPORT_ITEMS: CategoryItem[] = [
   word('tractor', 'трактор', '🚜'),
   word('scooter', 'самокат', '🛴'),
   word('motorcycle', 'мотоцикл', '🏍️'),
-  word('tram', 'трамвай', '🚃'),
+  word('tram', 'трамвай', '🚊'),
 ];
 
 export const NATURE_ITEMS: CategoryItem[] = [
@@ -213,7 +201,7 @@ export const NATURE_ITEMS: CategoryItem[] = [
 
 export const SPACE_ITEMS: CategoryItem[] = [
   word('rocket', 'ракета', '🚀'),
-  word('planet', 'планета', '🪐'),
+  word('planet', 'планета', '🌑'),
   word('astronaut', 'астронавт', '👨‍🚀'),
   word('ufo', 'НЛО', '🛸'),
   word('telescope', 'телескоп', '🔭'),
@@ -224,14 +212,10 @@ export const SPACE_ITEMS: CategoryItem[] = [
   word('satellite', 'спутник', '🛰️'),
   word('milky-way', 'галактика', '🌌'),
   word('alien', 'инопланетянин', '👽'),
-  word('moon-face', 'месяц', '🌕'),
   word('shooting-star', 'падающая звезда', '🌠', ['падающая', 'звезда']),
   word('ringed-planet', 'сатурн', '🪐'),
   word('earth', 'земля', '🌍'),
-  word('night', 'ночь', '🌃'),
   word('sparkles', 'сияние', '✨'),
-  word('firework', 'салют', '🎆'),
-  word('black-hole', 'чёрная дыра', '🕳️', ['чёрная', 'дыра']),
 ];
 
 export const FAMILY_ITEMS: CategoryItem[] = [
@@ -243,16 +227,10 @@ export const FAMILY_ITEMS: CategoryItem[] = [
   word('girl', 'девочка', '👧'),
   word('baby', 'малыш', '👶'),
   word('family', 'семья', '👨‍👩‍👧'),
-  word('woman', 'женщина', '👩'),
-  word('man', 'мужчина', '👨'),
   word('child', 'ребёнок', '🧒'),
   word('princess', 'принцесса', '👸'),
   word('prince', 'принц', '🤴'),
   word('couple', 'пара', '👫'),
-  word('brother', 'брат', '👦'),
-  word('sister', 'сестра', '👧'),
-  word('aunt', 'тётя', '👩'),
-  word('uncle', 'дядя', '👨'),
   word('love', 'любовь', '❤️'),
   word('home', 'дом', '🏠'),
 ];
@@ -276,7 +254,7 @@ export const PROFESSION_ITEMS: CategoryItem[] = [
   word('detective', 'детектив', '🕵️'),
   word('nurse', 'медсестра', '👩‍⚕️'),
   word('student', 'ученик', '👨‍🎓'),
-  word('office', 'офис', '👨‍💼'),
+  word('manager', 'менеджер', '👨‍💼'),
   word('coder', 'программист', '👨‍💻'),
 ];
 
@@ -294,7 +272,7 @@ export const SPORT_ITEMS: CategoryItem[] = [
   word('cricket', 'крикет', '🏏'),
   word('rugby', 'регби', '🏉'),
   word('hockey', 'хоккей', '🏒'),
-  word('archery', 'лук', '🏹'),
+  word('archery', 'стрелы', '🏹'),
   word('medal', 'медаль', '🏅'),
   word('trophy', 'кубок', '🏆'),
   word('running', 'бег', '🏃'),
@@ -318,10 +296,32 @@ export const MUSIC_ITEMS: CategoryItem[] = [
   word('headphones', 'наушники', '🎧'),
   word('radio', 'радио', '📻'),
   word('cd', 'диск', '💿'),
-  word('musical-keyboard', 'клавиши', '🎹'),
   word('musical-score', 'мелодия', '🎼'),
   word('dancer', 'танец', '💃'),
   word('party', 'праздник', '🎉'),
   word('bell', 'колокол', '🔔'),
   word('speaker', 'колонка', '🔊'),
+];
+
+export const ACTION_ITEMS: CategoryItem[] = [
+  word('sleep', 'спать', '😴'),
+  word('eat', 'есть', '🍽️'),
+  word('drink', 'пить', '🥤'),
+  word('walk', 'идти', '🚶'),
+  word('stand', 'стоять', '🧍'),
+  word('sit', 'сидеть', '🪑'),
+  word('wash', 'мыться', '🚿'),
+  word('bath', 'купаться', '🛀'),
+  word('brush-teeth', 'чистить зубы', '🪥', ['чистить', 'зубы']),
+  word('dress', 'одеваться', '👕'),
+  word('read', 'читать', '📖'),
+  word('write', 'писать', '✍️'),
+  word('draw', 'рисовать', '🎨'),
+  word('play', 'играть', '🧸'),
+  word('build', 'строить', '🧱'),
+  word('clean', 'убирать', '🧹'),
+  word('cook', 'готовить', '🍳'),
+  word('look', 'смотреть', '👀'),
+  word('talk', 'говорить', '🗣️'),
+  word('hug', 'обнимать', '🤗'),
 ];

@@ -48,7 +48,7 @@
           class="play-image__content"
           [class.play-image__content--solo-hint]="!showPictureModeToggle()"
         >
-        <div class="play-image__frame">
+        <div class="play-image__frame" (click)="speakPrompt()">
           <div class="play-image__mask">
           @if (usePicture()) {
             <img
@@ -89,7 +89,9 @@
         </button>
 
         @if (hintVisible()) {
-          <p class="play-image__label">{{ item.label }}</p>
+          <button type="button" class="play-image__label" (click)="speakPrompt()">
+            {{ item.label }}
+          </button>
         } @else {
           <span class="play-image__hint-placeholder" aria-hidden="true"></span>
         }

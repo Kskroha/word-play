@@ -43,7 +43,9 @@
     </header>
 
     <div class="play-main">
-      <p class="play-prompt">{{ item.label }}</p>
+      <button type="button" class="play-prompt play-prompt--emphasis" (click)="speakPrompt(item.label)">
+        {{ item.label }}
+      </button>
 
       @if (showPictureModeToggle()) {
         <mat-button-toggle-group

@@ -49,7 +49,8 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0 5.5rem 0 0.25rem;
+  padding-inline: 5.5rem;
+  box-sizing: border-box;
 }
 
 .play-header__category {
@@ -84,6 +85,7 @@
 .play-header__progress-track {
   width: min(100%, 520px);
   height: 14px;
+  margin-inline: auto;
   border-radius: 999px;
   border: 2px dashed var(--wp-border-dashed);
   background: var(--wp-purple-soft);
@@ -98,9 +100,11 @@
 }
 
 .play-header__progress-label {
+  width: 100%;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--wp-text-muted);
+  text-align: center;
 }
 
 .play-main {
@@ -124,6 +128,26 @@
   line-height: 1.15;
   text-align: center;
   color: var(--wp-heading);
+}
+
+button.play-prompt {
+  appearance: none;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.play-prompt.play-prompt--emphasis {
+  font-size: clamp(2.35rem, 8vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  padding: 0.15rem 0.35rem;
 }
 
 .feedback {
@@ -241,7 +265,7 @@
 
   .play-header__main {
     gap: 0.4rem;
-    padding: 0;
+    padding-inline: 0;
     width: 100%;
     align-items: center;
   }

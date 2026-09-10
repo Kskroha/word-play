@@ -53,6 +53,7 @@
   min-height: clamp(96px, 18dvh, 160px);
   overflow: hidden;
   border-radius: var(--wp-radius-sm);
+  container-type: size;
 }
 
 .picture-choice__image {
@@ -63,7 +64,12 @@
 }
 
 .picture-choice__emoji {
-  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 78cqmin;
   line-height: 1;
 }
 

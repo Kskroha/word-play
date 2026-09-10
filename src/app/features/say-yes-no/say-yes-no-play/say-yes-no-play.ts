@@ -28,7 +28,8 @@ import {
   TrueFalseRound,
 } from '../../../core/utils/game-round';
 import { MIC_OFF_ICON, MIC_ON_ICON } from '../../../core/utils/mic-icons';
-import { parseSpokenYesNo } from '../../../core/utils/speech-answer';
+import { createPlayItemsSignal, resetPlayItems } from '../../../core/utils/play-items';
+import { parseSpokenYesNo, getMatchConfirmationPhrase } from '../../../core/utils/speech-answer';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
@@ -60,6 +61,11 @@ export class SayYesNoPlay implements OnDestroy {
     return isCategoryId(id) ? getCategoryById(id) : undefined;
   });
 
+  readonly playItems = createPlayItemsSignal(
+    this.category,
+    () => this.settingsService.settings().maxWordsPerGame,
+  );
+
   readonly currentIndex = signal(0);
   readonly answerStatus = signal<AnswerStatus>('idle');
   readonly isCompleted = signal(false);
@@ -82,31 +88,24 @@ export class SayYesNoPlay implements OnDestroy {
 
   readonly showPictureModeToggle = computed(() => this.availablePictureModes().length > 1);
 
-  readonly currentItem = computed(() => {
-    const category = this.category();
-    if (!category) {
-      return undefined;
-    }
-
-    return category.items[this.currentIndex()];
-  });
+  readonly currentItem = computed(() => this.playItems()[this.currentIndex()]);
 
   readonly progressLabel = computed(() => {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return '';
     }
 
-    return `${this.currentIndex() + 1} / ${category.items.length}`;
+    return `${this.currentIndex() + 1} / ${total}`;
   });
 
   readonly progressPercent = computed(() => {
-    const category = this.category();
-    if (!category || category.items.length === 0) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return 0;
     }
 
-    return ((this.currentIndex() + 1) / category.items.length) * 100;
+    return ((this.currentIndex() + 1) / total) * 100;
   });
 
   readonly currentPictureUrl = computed(() => {
@@ -126,16 +125,16 @@ export class SayYesNoPlay implements OnDestroy {
   constructor() {
     effect(() => {
       const item = this.currentItem();
-      const category = this.category();
       const completed = this.isCompleted();
 
-      if (!item || !category || completed) {
+      if (!item || completed) {
         return;
       }
 
       untracked(() => {
-        this.ensureMatchSequence(category.items.length);
-        this.setupRound(item, category.items);
+        const items = this.playItems();
+        this.ensureMatchSequence(items.length);
+        this.setupRound(item, items);
       });
     });
   }
@@ -184,13 +183,13 @@ export class SayYesNoPlay implements OnDestroy {
     this.speech.stop();
     this.isListening.set(false);
 
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return;
     }
 
     const nextIndex = this.currentIndex() + 1;
-    if (nextIndex >= category.items.length) {
+    if (nextIndex >= total) {
       this.isCompleted.set(true);
       return;
     }
@@ -202,14 +201,11 @@ export class SayYesNoPlay implements OnDestroy {
     this.clearTimers();
     this.speech.stop();
     this.isListening.set(false);
+    this.refreshPlayItems();
     this.currentIndex.set(0);
     this.isCompleted.set(false);
     this.answerStatus.set('idle');
-
-    const category = this.category();
-    if (category) {
-      this.matchSequence.set(createBalancedMatchSequence(category.items.length));
-    }
+    this.matchSequence.set(createBalancedMatchSequence(this.playItems().length));
   }
 
   goBackToCategories(): void {
@@ -252,6 +248,10 @@ export class SayYesNoPlay implements OnDestroy {
     );
   }
 
+  private refreshPlayItems(): void {
+    resetPlayItems(this.playItems, this.category(), this.settingsService.settings().maxWordsPerGame);
+  }
+
   private ensureMatchSequence(roundCount: number): void {
     if (this.matchSequence().length === roundCount) {
       return;
@@ -264,12 +264,22 @@ export class SayYesNoPlay implements OnDestroy {
     this.speech.stop();
     this.isListening.set(false);
     const isMatch = this.matchSequence()[this.currentIndex()] ?? false;
-    this.round.set(createTrueFalseRound(item, pool, isMatch));
+    const round = createTrueFalseRound(item, pool, isMatch);
+    this.round.set(round);
     this.answerStatus.set('idle');
     this.selectedAnswer.set(null);
     this.heardText.set('');
     this.speechError.set('');
     this.pictureLoadFailed.set(false);
+    this.sound.speakWord(round.wordItem.label, { delayMs: 300 });
+  }
+
+  speakPrompt(word = this.round()?.wordItem.label): void {
+    if (!word) {
+      return;
+    }
+
+    this.sound.speakWord(word);
   }
 
   private evaluateSpokenAnswer(rawAnswer: string): void {
@@ -293,22 +303,18 @@ export class SayYesNoPlay implements OnDestroy {
     this.selectedAnswer.set(userSaysMatch);
     this.speechError.set('');
 
+    const spokenAnswer = getMatchConfirmationPhrase(round.isMatch, round.wordItem.label);
+
     if (userSaysMatch === round.isMatch) {
       this.answerStatus.set('correct');
-      this.sound.playCorrect();
-      this.speakCorrectAnswer(round.isMatch);
-      this.advanceTimeout = setTimeout(() => this.nextTask(), 1600);
+      this.sound.playCorrectThenSpeak(spokenAnswer);
+      this.advanceTimeout = setTimeout(() => this.nextTask(), 4200);
       return;
     }
 
     this.answerStatus.set('incorrect');
-    this.sound.playIncorrect();
-    this.speakCorrectAnswer(round.isMatch);
+    this.sound.playIncorrectThenSpeak(spokenAnswer);
     this.scheduleRetryReset();
-  }
-
-  private speakCorrectAnswer(isMatch: boolean): void {
-    this.sound.speakWord(isMatch ? 'Да' : 'Нет', { delayMs: 500 });
   }
 
   private scheduleRetryReset(): void {
@@ -320,7 +326,7 @@ export class SayYesNoPlay implements OnDestroy {
 
       this.answerStatus.set('idle');
       this.selectedAnswer.set(null);
-    }, 900);
+    }, 4200);
   }
 
   private clearRetryResetTimeout(): void {

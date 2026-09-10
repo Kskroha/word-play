@@ -14,6 +14,7 @@ import {
   getCategoryItemPictureUrl,
 } from '../../../core/utils/category-image';
 import { pickPictureChoices } from '../../../core/utils/game-round';
+import { createPlayItemsSignal, resetPlayItems } from '../../../core/utils/play-items';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
@@ -41,6 +42,11 @@ export class PictureChoicePlay {
     return isCategoryId(id) ? getCategoryById(id) : undefined;
   });
 
+  readonly playItems = createPlayItemsSignal(
+    this.category,
+    () => this.settingsService.settings().maxWordsPerGame,
+  );
+
   readonly currentIndex = signal(0);
   readonly answerStatus = signal<AnswerStatus>('idle');
   readonly isCompleted = signal(false);
@@ -59,31 +65,26 @@ export class PictureChoicePlay {
 
   readonly showPictureModeToggle = computed(() => this.availablePictureModes().length > 1);
 
-  readonly currentItem = computed<CategoryItem | undefined>(() => {
-    const category = this.category();
-    if (!category) {
-      return undefined;
-    }
-
-    return category.items[this.currentIndex()];
-  });
+  readonly currentItem = computed<CategoryItem | undefined>(
+    () => this.playItems()[this.currentIndex()],
+  );
 
   readonly progressLabel = computed(() => {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return '';
     }
 
-    return `${this.currentIndex() + 1} / ${category.items.length}`;
+    return `${this.currentIndex() + 1} / ${total}`;
   });
 
   readonly progressPercent = computed(() => {
-    const category = this.category();
-    if (!category || category.items.length === 0) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return 0;
     }
 
-    return ((this.currentIndex() + 1) / category.items.length) * 100;
+    return ((this.currentIndex() + 1) / total) * 100;
   });
 
   constructor() {
@@ -96,7 +97,7 @@ export class PictureChoicePlay {
         return;
       }
 
-      untracked(() => this.setupRound(item, category.items));
+      untracked(() => this.setupRound(item, this.playItems()));
     });
   }
 
@@ -135,7 +136,7 @@ export class PictureChoicePlay {
 
     if (choice.id === item.id) {
       this.answerStatus.set('correct');
-      this.sound.playCorrect();
+      this.sound.playCorrectThenSpeak(item.label);
       return;
     }
 
@@ -144,13 +145,13 @@ export class PictureChoicePlay {
   }
 
   nextTask(): void {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return;
     }
 
     const nextIndex = this.currentIndex() + 1;
-    if (nextIndex >= category.items.length) {
+    if (nextIndex >= total) {
       this.isCompleted.set(true);
       return;
     }
@@ -159,6 +160,7 @@ export class PictureChoicePlay {
   }
 
   restartCategory(): void {
+    this.refreshPlayItems();
     this.currentIndex.set(0);
     this.isCompleted.set(false);
     this.answerStatus.set('idle');
@@ -192,10 +194,23 @@ export class PictureChoicePlay {
     return this.answerStatus() === 'correct' && item?.id === choiceId;
   }
 
+  private refreshPlayItems(): void {
+    resetPlayItems(this.playItems, this.category(), this.settingsService.settings().maxWordsPerGame);
+  }
+
   private setupRound(item: CategoryItem, pool: CategoryItem[]): void {
     this.choices.set(pickPictureChoices(item, pool, this.maxChoices()));
     this.answerStatus.set('idle');
     this.selectedChoiceId.set(null);
     this.failedPictureIds.set(new Set());
+    this.sound.speakWord(item.label, { delayMs: 300 });
+  }
+
+  speakPrompt(word = this.currentItem()?.label): void {
+    if (!word) {
+      return;
+    }
+
+    this.sound.speakWord(word);
   }
 }

@@ -52,3 +52,12 @@ export function parseSpokenYesNo(spoken: string): boolean | null {
 export function parseTypedYesNo(value: string): boolean | null {
   return parseSpokenYesNo(value);
 }
+
+export function getMatchConfirmationPhrase(isMatch: boolean, label: string): string {
+  const word = label.trim();
+  if (!word) {
+    return isMatch ? 'Да' : 'Нет';
+  }
+
+  return isMatch ? `Да, это ${word}` : `Нет, это не ${word}`;
+}

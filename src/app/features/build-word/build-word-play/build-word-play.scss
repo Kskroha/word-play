@@ -57,6 +57,7 @@
   padding: 0;
   border: none;
   background: transparent;
+  cursor: pointer;
 }
 
 .play-image__mask {
@@ -125,11 +126,13 @@
   padding: 0.65rem 1.15rem;
   font-size: clamp(1.05rem, 2.5vw, 1.35rem);
   font-weight: 800;
+  font-family: inherit;
   color: var(--wp-heading);
   border-radius: var(--wp-radius-md);
   border: var(--wp-dashed);
   background: var(--wp-purple-soft);
   animation: hint-appear 0.25s ease;
+  cursor: pointer;
 }
 
 @keyframes hint-appear {

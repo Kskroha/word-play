@@ -6,11 +6,6 @@
   padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 4.75rem);
 }
 
-.play-prompt--instruction {
-  font-size: clamp(1.25rem, 4vw, 1.65rem);
-  color: var(--wp-text);
-}
-
 .play-picture__frame {
   width: min(var(--play-visual-width), 18rem);
   height: min(var(--play-visual-height), 18rem);

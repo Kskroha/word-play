@@ -21,6 +21,7 @@ export interface GameSettings {
   difficulty: Difficulty;
   maxAnswerChoices: 2 | 3 | 4;
   sessionTimeLimitMinutes: number | null;
+  maxWordsPerGame: number | null;
   soundEnabled: boolean;
   animationsEnabled: boolean;
   pictureMode: PictureMode;
@@ -60,13 +61,16 @@ export const GAME_DEFINITIONS: GameDefinition[] = [
   },
 ];
 
-export const CURRENT_SETTINGS_VERSION = 6;
+export const CURRENT_SETTINGS_VERSION = 7;
+
+export const MAX_WORDS_PER_GAME_OPTIONS: Array<number | null> = [null, 5, 10, 15, 20];
 
 export const DEFAULT_GAME_SETTINGS: GameSettings = {
   settingsVersion: CURRENT_SETTINGS_VERSION,
   difficulty: 'easy',
   maxAnswerChoices: 3,
   sessionTimeLimitMinutes: null,
+  maxWordsPerGame: null,
   soundEnabled: true,
   animationsEnabled: true,
   pictureMode: 'emoji',

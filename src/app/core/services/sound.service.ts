@@ -5,6 +5,7 @@ import { GameSettingsService } from './game-settings.service';
 const CORRECT_SOUND = 'assets/sounds/correct.wav';
 const INCORRECT_SOUND = 'assets/sounds/incorrect.wav';
 const SPEAK_AFTER_CANCEL_MS = 120;
+const SPEAK_AFTER_FEEDBACK_MS = 400;
 
 @Injectable({ providedIn: 'root' })
 export class SoundService {
@@ -19,21 +20,35 @@ export class SoundService {
     this.initSpeech();
   }
 
-  playCorrect(): void {
-    this.play(this.getAudio(CORRECT_SOUND, 'correct'));
+  playCorrect(): Promise<void> {
+    return this.play(this.getAudio(CORRECT_SOUND, 'correct'));
   }
 
-  playIncorrect(): void {
-    this.play(this.getAudio(INCORRECT_SOUND, 'incorrect'));
+  playIncorrect(): Promise<void> {
+    return this.play(this.getAudio(INCORRECT_SOUND, 'incorrect'));
   }
 
-  speakLetter(letter: string): void {
+  playCorrectThenSpeak(word: string): void {
+    this.playThenSpeak(this.playCorrect(), word);
+  }
+
+  playCorrectThenSpeakLetter(letter: string): void {
+    void this.playCorrect().then(() => {
+      this.speakLetter(letter, { delayMs: SPEAK_AFTER_FEEDBACK_MS });
+    });
+  }
+
+  playIncorrectThenSpeak(word: string): void {
+    this.playThenSpeak(this.playIncorrect(), word);
+  }
+
+  speakLetter(letter: string, options?: { delayMs?: number }): void {
     const spoken = getSpokenLetter(letter);
     if (!spoken) {
       return;
     }
 
-    this.speak(spoken, { rate: 0.95, interrupt: true });
+    this.speak(spoken, { rate: 0.95, interrupt: true, delayMs: options?.delayMs });
   }
 
   speakWord(
@@ -186,12 +201,29 @@ export class SoundService {
     return this.incorrectAudio;
   }
 
-  private play(audio: HTMLAudioElement): void {
+  private playThenSpeak(feedback: Promise<void>, word: string): void {
+    void feedback.then(() => {
+      this.speakWord(word, { delayMs: SPEAK_AFTER_FEEDBACK_MS });
+    });
+  }
+
+  private play(audio: HTMLAudioElement): Promise<void> {
     if (!this.settingsService.settings().soundEnabled) {
-      return;
+      return Promise.resolve();
     }
 
     audio.currentTime = 0;
-    void audio.play().catch(() => undefined);
+
+    return new Promise((resolve) => {
+      const finish = () => {
+        audio.removeEventListener('ended', finish);
+        audio.removeEventListener('error', finish);
+        resolve();
+      };
+
+      audio.addEventListener('ended', finish);
+      audio.addEventListener('error', finish);
+      void audio.play().catch(() => finish());
+    });
   }
 }

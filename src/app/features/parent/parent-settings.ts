@@ -10,6 +10,7 @@ import {
   Difficulty,
   GAME_DEFINITIONS,
   GameId,
+  MAX_WORDS_PER_GAME_OPTIONS,
 } from '../../core/models/game-settings.model';
 import { GameSettingsService } from '../../core/services/game-settings.service';
 import { PageShell } from '../../shared/ui/page-shell/page-shell';
@@ -37,6 +38,7 @@ export class ParentSettings {
   readonly difficultyOptions: Difficulty[] = ['easy', 'medium', 'hard'];
   readonly answerChoiceOptions: Array<2 | 3 | 4> = [2, 3, 4];
   readonly sessionLimitOptions: Array<number | null> = [null, 5, 10, 15, 20, 30];
+  readonly maxWordsOptions = MAX_WORDS_PER_GAME_OPTIONS;
 
   updateDifficulty(difficulty: Difficulty): void {
     this.settingsService.update({ difficulty });
@@ -48,6 +50,10 @@ export class ParentSettings {
 
   updateSessionLimit(sessionTimeLimitMinutes: number | null): void {
     this.settingsService.update({ sessionTimeLimitMinutes });
+  }
+
+  updateMaxWords(maxWordsPerGame: number | null): void {
+    this.settingsService.update({ maxWordsPerGame });
   }
 
   updateSoundEnabled(soundEnabled: boolean): void {
@@ -72,5 +78,9 @@ export class ParentSettings {
 
   sessionLimitLabel(minutes: number | null): string {
     return minutes === null ? 'Без ограничения' : `${minutes} минут`;
+  }
+
+  maxWordsLabel(count: number | null): string {
+    return count === null ? 'Все слова темы' : `${count} слов`;
   }
 }

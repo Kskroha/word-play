@@ -43,7 +43,13 @@
     </header>
 
     <div class="play-main">
-      <p class="play-prompt">{{ currentRound.wordItem.label }}</p>
+      <button
+        type="button"
+        class="play-prompt play-prompt--emphasis"
+        (click)="speakPrompt(currentRound.wordItem.label)"
+      >
+        {{ currentRound.wordItem.label }}
+      </button>
 
       <div class="play-picture">
         <div class="play-picture__frame">
@@ -77,22 +83,24 @@
         }
       </div>
 
-      <div class="say-yes-no-hint-actions" aria-live="polite">
+      <div class="yes-no-actions yes-no-actions--hint" aria-live="polite">
         <div
-          class="say-yes-no-hint-btn say-yes-no-hint-btn--yes"
-          [class.say-yes-no-hint-btn--selected]="isHintSelected(true)"
-          [class.say-yes-no-hint-btn--correct]="isAnswerCorrect(true)"
-          [class.say-yes-no-hint-btn--wrong]="isAnswerWrong(true)"
+          class="yes-no-btn yes-no-btn--yes"
+          [class.yes-no-btn--selected]="isHintSelected(true)"
+          [class.yes-no-btn--correct]="isAnswerCorrect(true)"
+          [class.yes-no-btn--wrong]="isAnswerWrong(true)"
         >
-          Да
+          <span class="yes-no-btn__emoji" aria-hidden="true">👍</span>
+          <span>Да</span>
         </div>
         <div
-          class="say-yes-no-hint-btn say-yes-no-hint-btn--no"
-          [class.say-yes-no-hint-btn--selected]="isHintSelected(false)"
-          [class.say-yes-no-hint-btn--correct]="isAnswerCorrect(false)"
-          [class.say-yes-no-hint-btn--wrong]="isAnswerWrong(false)"
+          class="yes-no-btn yes-no-btn--no"
+          [class.yes-no-btn--selected]="isHintSelected(false)"
+          [class.yes-no-btn--correct]="isAnswerCorrect(false)"
+          [class.yes-no-btn--wrong]="isAnswerWrong(false)"
         >
-          Нет
+          <span class="yes-no-btn__emoji" aria-hidden="true">👎</span>
+          <span>Нет</span>
         </div>
       </div>
 

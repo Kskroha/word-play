@@ -25,6 +25,7 @@ import {
 import { MIC_OFF_ICON, MIC_ON_ICON } from '../../../core/utils/mic-icons';
 import { isSpokenAnswerCorrect } from '../../../core/utils/speech-answer';
 import { normalizeWord } from '../../../core/utils/word-builder';
+import { createPlayItemsSignal, resetPlayItems } from '../../../core/utils/play-items';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
@@ -56,6 +57,11 @@ export class NamePicturePlay implements OnDestroy {
     return isCategoryId(id) ? getCategoryById(id) : undefined;
   });
 
+  readonly playItems = createPlayItemsSignal(
+    this.category,
+    () => this.settingsService.settings().maxWordsPerGame,
+  );
+
   readonly currentIndex = signal(0);
   readonly answerStatus = signal<AnswerStatus>('idle');
   readonly isCompleted = signal(false);
@@ -74,31 +80,26 @@ export class NamePicturePlay implements OnDestroy {
 
   readonly showPictureModeToggle = computed(() => this.availablePictureModes().length > 1);
 
-  readonly currentItem = computed<CategoryItem | undefined>(() => {
-    const category = this.category();
-    if (!category) {
-      return undefined;
-    }
-
-    return category.items[this.currentIndex()];
-  });
+  readonly currentItem = computed<CategoryItem | undefined>(
+    () => this.playItems()[this.currentIndex()],
+  );
 
   readonly progressLabel = computed(() => {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return '';
     }
 
-    return `${this.currentIndex() + 1} / ${category.items.length}`;
+    return `${this.currentIndex() + 1} / ${total}`;
   });
 
   readonly progressPercent = computed(() => {
-    const category = this.category();
-    if (!category || category.items.length === 0) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return 0;
     }
 
-    return ((this.currentIndex() + 1) / category.items.length) * 100;
+    return ((this.currentIndex() + 1) / total) * 100;
   });
 
   readonly currentPictureUrl = computed(() => {
@@ -184,13 +185,13 @@ export class NamePicturePlay implements OnDestroy {
     this.speech.stop();
     this.isListening.set(false);
 
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return;
     }
 
     const nextIndex = this.currentIndex() + 1;
-    if (nextIndex >= category.items.length) {
+    if (nextIndex >= total) {
       this.isCompleted.set(true);
       return;
     }
@@ -201,6 +202,7 @@ export class NamePicturePlay implements OnDestroy {
   restartCategory(): void {
     this.speech.stop();
     this.isListening.set(false);
+    this.refreshPlayItems();
     this.currentIndex.set(0);
     this.isCompleted.set(false);
     this.answerStatus.set('idle');
@@ -229,6 +231,14 @@ export class NamePicturePlay implements OnDestroy {
     this.pictureLoadFailed.set(true);
   }
 
+  speakPrompt(): void {
+    this.sound.speakWord('Что это?');
+  }
+
+  private refreshPlayItems(): void {
+    resetPlayItems(this.playItems, this.category(), this.settingsService.settings().maxWordsPerGame);
+  }
+
   private setupRound(): void {
     this.speech.stop();
     this.isListening.set(false);
@@ -237,6 +247,7 @@ export class NamePicturePlay implements OnDestroy {
     this.speechError.set('');
     this.typedFallback.set('');
     this.pictureLoadFailed.set(false);
+    this.sound.speakWord('Что это?', { delayMs: 300 });
   }
 
   private evaluateAnswer(rawAnswer: string): void {
@@ -254,7 +265,7 @@ export class NamePicturePlay implements OnDestroy {
       this.answerStatus.set('correct');
       this.speech.stop();
       this.isListening.set(false);
-      this.sound.playCorrect();
+      this.sound.playCorrectThenSpeak(item.label);
       return;
     }
 

@@ -1,62 +1,19 @@
 @use '../../../shared/styles/play-shell';
 @use '../../../shared/styles/play-picture';
 @use '../../../shared/styles/mic-button';
+@use '../../../shared/styles/yes-no-button';
 
 :host .play-page:not(.play-page--empty):not(.play-page--completed) {
   padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 4.75rem);
 }
 
-.say-yes-no-hint-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(0.75rem, 2dvh, 1.25rem);
-  width: min(100%, 480px);
+.yes-no-actions--hint {
   pointer-events: none;
   user-select: none;
-}
 
-.say-yes-no-hint-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(52px, 8dvh, 72px);
-  border: 2.5px solid transparent;
-  border-radius: var(--wp-radius-lg);
-  font-size: clamp(1.35rem, 4vw, 1.85rem);
-  font-weight: 800;
-  font-family: var(--wp-font);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease,
-    opacity 0.2s ease;
-}
-
-.say-yes-no-hint-btn--selected {
-  transform: scale(1.04);
-  box-shadow: 0 0 0 3px rgba(91, 143, 249, 0.45);
-}
-
-.say-yes-no-hint-btn--correct {
-  transform: scale(1.06);
-  box-shadow: 0 6px 18px rgba(123, 200, 154, 0.35);
-}
-
-.say-yes-no-hint-btn--wrong {
-  opacity: 0.75;
-}
-
-.say-yes-no-hint-btn--yes {
-  color: #3d7a58;
-  background: linear-gradient(180deg, #f5fbf7 0%, var(--wp-success-soft) 100%);
-  border-color: var(--wp-success);
-  box-shadow: 0 4px 14px rgba(123, 200, 154, 0.2);
-}
-
-.say-yes-no-hint-btn--no {
-  color: #a85858;
-  background: linear-gradient(180deg, #fef8f8 0%, var(--wp-error-soft) 100%);
-  border-color: var(--wp-error);
-  box-shadow: 0 4px 14px rgba(232, 160, 160, 0.2);
+  .yes-no-btn {
+    cursor: default;
+  }
 }
 
 .say-yes-no-heard,

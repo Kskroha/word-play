@@ -16,7 +16,8 @@ export type CategoryId =
   | 'family'
   | 'professions'
   | 'sports'
-  | 'music';
+  | 'music'
+  | 'actions';
 
 export interface CategoryItem {
   id: string;

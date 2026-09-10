@@ -43,7 +43,13 @@
     </header>
 
     <div class="play-main">
-      <p class="play-prompt">{{ currentRound.wordItem.label }}</p>
+      <button
+        type="button"
+        class="play-prompt play-prompt--emphasis"
+        (click)="speakPrompt(currentRound.wordItem.label)"
+      >
+        {{ currentRound.wordItem.label }}
+      </button>
 
       <div class="play-picture">
         <div class="play-picture__frame">
@@ -77,26 +83,28 @@
         }
       </div>
 
-      <div class="true-false-actions">
+      <div class="yes-no-actions">
         <button
           type="button"
-          class="true-false-btn true-false-btn--yes"
-          [class.true-false-btn--wrong]="isAnswerWrong(true)"
-          [class.true-false-btn--correct]="isAnswerCorrect(true)"
+          class="yes-no-btn yes-no-btn--yes"
+          [class.yes-no-btn--wrong]="isAnswerWrong(true)"
+          [class.yes-no-btn--correct]="isAnswerCorrect(true)"
           [disabled]="answerStatus() === 'correct'"
           (click)="answer(true)"
         >
-          Да
+          <span class="yes-no-btn__emoji" aria-hidden="true">👍</span>
+          <span>Да</span>
         </button>
         <button
           type="button"
-          class="true-false-btn true-false-btn--no"
-          [class.true-false-btn--wrong]="isAnswerWrong(false)"
-          [class.true-false-btn--correct]="isAnswerCorrect(false)"
+          class="yes-no-btn yes-no-btn--no"
+          [class.yes-no-btn--wrong]="isAnswerWrong(false)"
+          [class.yes-no-btn--correct]="isAnswerCorrect(false)"
           [disabled]="answerStatus() === 'correct'"
           (click)="answer(false)"
         >
-          Нет
+          <span class="yes-no-btn__emoji" aria-hidden="true">👎</span>
+          <span>Нет</span>
         </button>
       </div>
 
@@ -106,19 +114,6 @@
 
       @if (answerStatus() === 'correct') {
         <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
-      }
-
-      @if (answerStatus() === 'correct') {
-        <div class="play-actions">
-          <button
-            mat-flat-button
-            type="button"
-            class="play-actions__button play-actions__button--success"
-            (click)="nextTask()"
-          >
-            Дальше →
-          </button>
-        </div>
       }
     </div>
 

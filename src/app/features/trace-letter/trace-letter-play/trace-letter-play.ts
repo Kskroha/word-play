@@ -46,7 +46,7 @@ export class TraceLetterPlay implements OnDestroy {
   private autoAdvanceTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private transitionTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  private static readonly SUCCESS_ADVANCE_MS = 750;
+  private static readonly SUCCESS_ADVANCE_MS = 2200;
   private static readonly TRANSITION_OUT_MS = 260;
   private static readonly TRANSITION_IN_MS = 320;
 
@@ -260,6 +260,7 @@ export class TraceLetterPlay implements OnDestroy {
     this.pad?.setLetter(round.letter, round.guideColor);
     this.syncBrushColorToGuide(round.guideColor);
     requestAnimationFrame(() => this.pad?.resize());
+    this.sound.speakLetter(round.letter, { delayMs: 300 });
   }
 
   private syncBrushColorToGuide(guideColor: string): void {
@@ -310,7 +311,12 @@ export class TraceLetterPlay implements OnDestroy {
 
     this.pad.setCelebrating(true);
     this.roundComplete.set(true);
-    this.sound.playCorrect();
+    const letter = this.currentRound()?.letter;
+    if (letter) {
+      this.sound.playCorrectThenSpeakLetter(letter);
+    } else {
+      void this.sound.playCorrect();
+    }
     this.scheduleAutoAdvance();
   }
 

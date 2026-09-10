@@ -43,7 +43,9 @@
     </header>
 
     <div class="play-main">
-      <p class="play-prompt play-prompt--instruction">Посмотри на картинку и назови, что это</p>
+      <button type="button" class="play-prompt play-prompt--emphasis" (click)="speakPrompt()">
+        Что это?
+      </button>
 
       <div class="play-picture">
         <div class="play-picture__frame">

@@ -42,14 +42,14 @@
 }
 
 .game-list {
-  --game-gap: clamp(0.4rem, 1.2vw, 0.55rem);
-  --game-columns: 6;
-  width: 100%;
+  --game-gap: clamp(0.85rem, 2.2vw, 1.15rem);
+  --game-columns: 2;
+  width: min(100%, 28rem);
   display: grid;
   grid-template-columns: repeat(var(--game-columns), minmax(0, 1fr));
   gap: var(--game-gap);
-  margin: 0;
-  padding: 0.25rem 0 0.85rem;
+  margin: 0.5rem auto 0;
+  padding: 0.35rem 0 0.85rem;
   align-content: start;
 }
 
@@ -62,9 +62,9 @@
   width: 100%;
   aspect-ratio: 1;
   min-width: 0;
-  padding: clamp(0.3rem, 1vw, 0.45rem) clamp(0.22rem, 0.8vw, 0.3rem);
-  border: 2px solid var(--wp-border-dashed);
-  border-radius: var(--wp-radius-md);
+  padding: clamp(0.55rem, 1.6vw, 0.85rem);
+  border: 2.5px solid var(--wp-border-dashed);
+  border-radius: var(--wp-radius-xl);
   background: #ffffff;
   text-decoration: none;
   text-align: center;
@@ -92,18 +92,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(1.65rem, 6vw, 2.35rem);
-  height: clamp(1.65rem, 6vw, 2.35rem);
-  border-radius: var(--wp-radius-sm);
+  width: clamp(3.25rem, 12vw, 4.5rem);
+  height: clamp(3.25rem, 12vw, 4.5rem);
+  border-radius: var(--wp-radius-md);
   background: rgba(255, 255, 255, 0.72);
-  font-size: clamp(1rem, 4.2vw, 1.45rem);
+  font-size: clamp(1.85rem, 7vw, 2.5rem);
   line-height: 1;
   flex-shrink: 0;
 }
 
 .game-choice__title {
   margin: 0;
-  font-size: clamp(0.62rem, 2.4vw, 0.75rem);
+  font-size: clamp(0.95rem, 3vw, 1.2rem);
   font-weight: 800;
   line-height: 1.08;
   text-align: center;
@@ -160,21 +160,9 @@
   color: var(--wp-heading);
 }
 
-@media (max-width: 900px) {
-  .game-list {
-    --game-columns: 5;
-  }
-}
-
-@media (max-width: 720px) {
-  .game-list {
-    --game-columns: 4;
-  }
-}
-
 @media (max-width: 560px) {
   :host ::ng-deep .page-shell {
-    padding-inline: 0.65rem;
+    padding-inline: 0.75rem;
   }
 
   :host ::ng-deep .page-shell__header {
@@ -182,34 +170,22 @@
   }
 
   .game-list {
-    --game-columns: 3;
-    --game-gap: 0.5rem;
+    width: 100%;
+    --game-gap: 0.75rem;
   }
 
   .game-choice {
-    gap: 0.35rem;
-    border-radius: var(--wp-radius-lg);
+    gap: 0.45rem;
   }
 
   .game-choice__emoji {
-    width: clamp(2rem, 9vw, 2.6rem);
-    height: clamp(2rem, 9vw, 2.6rem);
-    font-size: clamp(1.2rem, 5.5vw, 1.65rem);
+    width: clamp(2.75rem, 16vw, 3.75rem);
+    height: clamp(2.75rem, 16vw, 3.75rem);
+    font-size: clamp(1.65rem, 9vw, 2.15rem);
   }
 
   .game-choice__title {
-    font-size: clamp(0.68rem, 3.2vw, 0.82rem);
-  }
-}
-
-@media (max-width: 380px) {
-  .game-list {
-    --game-columns: 2;
-    --game-gap: 0.55rem;
-  }
-
-  .game-choice__title {
-    font-size: 0.78rem;
+    font-size: clamp(0.9rem, 4.2vw, 1.1rem);
   }
 }
 

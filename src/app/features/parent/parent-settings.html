@@ -44,6 +44,18 @@
           }
         </mat-select>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="settings-field">
+        <mat-label>Слов в одной игре</mat-label>
+        <mat-select
+          [ngModel]="settings().maxWordsPerGame"
+          (ngModelChange)="updateMaxWords($event)"
+        >
+          @for (option of maxWordsOptions; track option ?? 'all') {
+            <mat-option [value]="option">{{ maxWordsLabel(option) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </mat-card-content>
   </mat-card>
 

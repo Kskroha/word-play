@@ -4,6 +4,7 @@ import {
   DEFAULT_GAME_SETTINGS,
   GameId,
   GameSettings,
+  MAX_WORDS_PER_GAME_OPTIONS,
 } from '../models/game-settings.model';
 
 const STORAGE_KEY = 'word-play-settings';
@@ -52,6 +53,7 @@ export class GameSettingsService {
 
       const parsed = JSON.parse(raw) as Partial<GameSettings>;
       const merged: GameSettings = { ...DEFAULT_GAME_SETTINGS, ...parsed };
+      merged.maxWordsPerGame = this.normalizeMaxWords(merged.maxWordsPerGame);
 
       if ((merged.settingsVersion ?? 0) < CURRENT_SETTINGS_VERSION) {
         const enabled = new Set(
@@ -71,6 +73,12 @@ export class GameSettingsService {
     } catch {
       return { ...DEFAULT_GAME_SETTINGS };
     }
+  }
+
+  private normalizeMaxWords(value: unknown): number | null {
+    return (MAX_WORDS_PER_GAME_OPTIONS as ReadonlyArray<unknown>).includes(value)
+      ? (value as number | null)
+      : null;
   }
 
   private save(settings: GameSettings): void {

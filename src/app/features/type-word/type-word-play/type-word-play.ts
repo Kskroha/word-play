@@ -30,6 +30,7 @@ import {
   isTypedLetterCorrect,
 } from '../../../core/utils/game-round';
 import { TileScrollRowDirective } from '../../../shared/directives/tile-scroll-row.directive';
+import { createPlayItemsSignal, resetPlayItems } from '../../../core/utils/play-items';
 import { normalizeWord, splitAnswerIntoLetters } from '../../../core/utils/word-builder';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
@@ -61,6 +62,11 @@ export class TypeWordPlay {
     return isCategoryId(id) ? getCategoryById(id) : undefined;
   });
 
+  readonly playItems = createPlayItemsSignal(
+    this.category,
+    () => this.settingsService.settings().maxWordsPerGame,
+  );
+
   readonly currentIndex = signal(0);
   readonly answerStatus = signal<AnswerStatus>('idle');
   readonly isCompleted = signal(false);
@@ -77,31 +83,26 @@ export class TypeWordPlay {
 
   readonly showPictureModeToggle = computed(() => this.availablePictureModes().length > 1);
 
-  readonly currentItem = computed<CategoryItem | undefined>(() => {
-    const category = this.category();
-    if (!category) {
-      return undefined;
-    }
-
-    return category.items[this.currentIndex()];
-  });
+  readonly currentItem = computed<CategoryItem | undefined>(
+    () => this.playItems()[this.currentIndex()],
+  );
 
   readonly progressLabel = computed(() => {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return '';
     }
 
-    return `${this.currentIndex() + 1} / ${category.items.length}`;
+    return `${this.currentIndex() + 1} / ${total}`;
   });
 
   readonly progressPercent = computed(() => {
-    const category = this.category();
-    if (!category || category.items.length === 0) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return 0;
     }
 
-    return ((this.currentIndex() + 1) / category.items.length) * 100;
+    return ((this.currentIndex() + 1) / total) * 100;
   });
 
   readonly currentPictureUrl = computed(() => {
@@ -268,13 +269,13 @@ export class TypeWordPlay {
   }
 
   nextTask(): void {
-    const category = this.category();
-    if (!category) {
+    const total = this.playItems().length;
+    if (total === 0) {
       return;
     }
 
     const nextIndex = this.currentIndex() + 1;
-    if (nextIndex >= category.items.length) {
+    if (nextIndex >= total) {
       this.isCompleted.set(true);
       return;
     }
@@ -283,6 +284,7 @@ export class TypeWordPlay {
   }
 
   restartCategory(): void {
+    this.refreshPlayItems();
     this.currentIndex.set(0);
     this.isCompleted.set(false);
     this.answerStatus.set('idle');
@@ -311,6 +313,10 @@ export class TypeWordPlay {
     this.pictureLoadFailed.set(true);
   }
 
+  private refreshPlayItems(): void {
+    resetPlayItems(this.playItems, this.category(), this.settingsService.settings().maxWordsPerGame);
+  }
+
   private setupRound(item: CategoryItem): void {
     const answer = getItemTypingAnswer(item);
     this.expectedLetters.set(splitAnswerIntoLetters(answer));
@@ -322,6 +328,17 @@ export class TypeWordPlay {
     if (input) {
       input.value = '';
     }
+
+    this.sound.speakWord(item.label, { delayMs: 300 });
+  }
+
+  speakPrompt(): void {
+    const item = this.currentItem();
+    if (!item) {
+      return;
+    }
+
+    this.sound.speakWord(item.label);
   }
 
   private evaluateIfComplete(): void {
@@ -340,7 +357,7 @@ export class TypeWordPlay {
     const answer = this.currentAnswer();
     if (isTypedAnswerCorrect(typed, answer)) {
       this.answerStatus.set('correct');
-      this.sound.playCorrect();
+      this.sound.playCorrectThenSpeak(this.currentItem()?.label ?? answer);
       return;
     }
 

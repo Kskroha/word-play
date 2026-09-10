@@ -1,5 +1,6 @@
 import { Category, CategoryId, CategoryItem } from '../models/category.model';
 import {
+  ACTION_ITEMS,
   BIRD_ITEMS,
   DOMESTIC_ANIMAL_ITEMS,
   FAMILY_ITEMS,
@@ -129,7 +130,7 @@ export const CATEGORIES: Category[] = [
       { id: 'sad', label: 'мне грустно', blocks: ['мне', 'грустно'], imageEmoji: '😢' },
       { id: 'afraid', label: 'я боюсь', blocks: ['я', 'боюсь'], imageEmoji: '😨' },
       { id: 'angry', label: 'я злюсь', blocks: ['я', 'злюсь'], imageEmoji: '😠' },
-      { id: 'surprised', label: 'я удивлен', blocks: ['я', 'удивлен'], imageEmoji: '😲' },
+      { id: 'surprised', label: 'я удивлён', blocks: ['я', 'удивлён'], imageEmoji: '😲' },
       { id: 'ashamed', label: 'мне стыдно', blocks: ['мне', 'стыдно'], imageEmoji: '😳' },
       { id: 'thinking', label: 'я думаю', blocks: ['я', 'думаю'], imageEmoji: '🤔' },
       { id: 'proud', label: 'я горжусь', blocks: ['я', 'горжусь'], imageEmoji: '😌' },
@@ -280,6 +281,13 @@ export const CATEGORIES: Category[] = [
     description: 'Инструменты и музыка',
     emoji: '🎵',
     items: MUSIC_ITEMS,
+  },
+  {
+    id: 'actions',
+    title: 'Действия',
+    description: 'Что мы делаем каждый день',
+    emoji: '🚶',
+    items: ACTION_ITEMS,
   },
 ];
 

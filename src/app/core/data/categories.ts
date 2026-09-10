@@ -306,12 +306,6 @@ export function getVocabularyThemeRoute(
   return ['/vocabulary', categoryId];
 }
 
-export function getNamePictureThemeRoute(
-  categoryId: Exclude<CategoryId, 'letters'>,
-): string[] {
-  return ['/name-picture', categoryId];
-}
-
 /** @deprecated Use section routes: `/letters` or `/vocabulary/:id`. */
 export function getCategoryRoute(categoryId: CategoryId): string[] {
   if (categoryId === 'letters') {

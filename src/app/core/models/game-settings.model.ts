@@ -6,7 +6,9 @@ export type GameId =
   | 'picture-choice'
   | 'build-word'
   | 'type-word'
-  | 'true-false';
+  | 'true-false'
+  | 'name-picture'
+  | 'say-yes-no';
 
 export interface GameDefinition {
   id: GameId;
@@ -46,9 +48,19 @@ export const GAME_DEFINITIONS: GameDefinition[] = [
     title: 'Верно или неверно',
     description: 'Посмотри на задание и выбери ответ',
   },
+  {
+    id: 'name-picture',
+    title: 'Назови картинку',
+    description: 'Посмотри на картинку и скажи вслух, что это',
+  },
+  {
+    id: 'say-yes-no',
+    title: 'Скажи да или нет',
+    description: 'Посмотри на слово и картинку и ответь вслух',
+  },
 ];
 
-export const CURRENT_SETTINGS_VERSION = 4;
+export const CURRENT_SETTINGS_VERSION = 6;
 
 export const DEFAULT_GAME_SETTINGS: GameSettings = {
   settingsVersion: CURRENT_SETTINGS_VERSION,
@@ -58,7 +70,14 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   soundEnabled: true,
   animationsEnabled: true,
   pictureMode: 'emoji',
-  enabledGames: ['picture-choice', 'build-word', 'type-word', 'true-false'],
+  enabledGames: [
+    'picture-choice',
+    'build-word',
+    'type-word',
+    'true-false',
+    'name-picture',
+    'say-yes-no',
+  ],
 };
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {

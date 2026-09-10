@@ -5,6 +5,8 @@ export const GAME_IMAGE_URLS: Record<GameId, string> = {
   'build-word': 'assets/images/games/build-word.png',
   'type-word': 'assets/images/games/type-word.png',
   'true-false': 'assets/images/games/true-false.png',
+  'name-picture': 'assets/images/games/name-picture.png',
+  'say-yes-no': 'assets/images/games/say-yes-no.png',
 };
 
 export function getGameImageUrl(gameId: GameId): string {

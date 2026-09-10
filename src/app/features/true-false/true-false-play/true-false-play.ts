@@ -13,7 +13,11 @@ import {
   getCategoryItemPictureUrl,
 } from '../../../core/utils/category-image';
 import { CategoryItem } from '../../../core/models/category.model';
-import { createTrueFalseRound, TrueFalseRound } from '../../../core/utils/game-round';
+import {
+  createBalancedMatchSequence,
+  createTrueFalseRound,
+  TrueFalseRound,
+} from '../../../core/utils/game-round';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
@@ -45,6 +49,7 @@ export class TrueFalsePlay {
   readonly answerStatus = signal<AnswerStatus>('idle');
   readonly isCompleted = signal(false);
   readonly round = signal<TrueFalseRound | null>(null);
+  private readonly matchSequence = signal<boolean[]>([]);
   readonly selectedAnswer = signal<boolean | null>(null);
   readonly pictureLoadFailed = signal(false);
 
@@ -108,7 +113,10 @@ export class TrueFalsePlay {
         return;
       }
 
-      untracked(() => this.setupRound(item, category.items));
+      untracked(() => {
+        this.ensureMatchSequence(category.items.length);
+        this.setupRound(item, category.items);
+      });
     });
   }
 
@@ -153,6 +161,11 @@ export class TrueFalsePlay {
     this.currentIndex.set(0);
     this.isCompleted.set(false);
     this.answerStatus.set('idle');
+
+    const category = this.category();
+    if (category) {
+      this.matchSequence.set(createBalancedMatchSequence(category.items.length));
+    }
   }
 
   goBackToCategories(): void {
@@ -191,8 +204,17 @@ export class TrueFalsePlay {
     );
   }
 
+  private ensureMatchSequence(roundCount: number): void {
+    if (this.matchSequence().length === roundCount) {
+      return;
+    }
+
+    this.matchSequence.set(createBalancedMatchSequence(roundCount));
+  }
+
   private setupRound(item: CategoryItem, pool: CategoryItem[]): void {
-    this.round.set(createTrueFalseRound(item, pool));
+    const isMatch = this.matchSequence()[this.currentIndex()] ?? false;
+    this.round.set(createTrueFalseRound(item, pool, isMatch));
     this.answerStatus.set('idle');
     this.selectedAnswer.set(null);
     this.pictureLoadFailed.set(false);

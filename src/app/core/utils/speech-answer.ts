@@ -28,3 +28,27 @@ export function isSpokenAnswerCorrect(spoken: string, expected: string): boolean
 
   return false;
 }
+
+export function parseSpokenYesNo(spoken: string): boolean | null {
+  const norm = normalizeWord(spoken);
+  if (!norm) {
+    return null;
+  }
+
+  const noHints = ['нет', 'no', 'неа', 'неверно', 'неправильно', 'ложь'];
+  const yesHints = ['да', 'yes', 'ага', 'угу', 'верно', 'правильно', 'истина'];
+
+  if (noHints.some((hint) => norm === hint || norm.includes(hint))) {
+    return false;
+  }
+
+  if (yesHints.some((hint) => norm === hint || norm.includes(hint))) {
+    return true;
+  }
+
+  return null;
+}
+
+export function parseTypedYesNo(value: string): boolean | null {
+  return parseSpokenYesNo(value);
+}

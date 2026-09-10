@@ -15,13 +15,6 @@ export const APP_SECTIONS: AppSection[] = [
     emoji: '📚',
     route: ['/vocabulary'],
   },
-  {
-    id: 'name-picture',
-    title: 'Назови картинку',
-    description: 'Посмотри на картинку и скажи вслух, что это',
-    emoji: '🎤',
-    route: ['/name-picture'],
-  },
 ];
 
 export const HOME_ROUTE: string[] = ['/categories'];

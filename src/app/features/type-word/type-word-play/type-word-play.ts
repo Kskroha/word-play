@@ -201,18 +201,33 @@ export class TypeWordPlay {
     const normalized = normalizeWord(rawValue);
     const maxLength = this.expectedLetters().length;
     const clipped = normalized.slice(0, maxLength);
+    const previousLength = this.typedText().length;
 
     if (clipped !== rawValue && this.typeInput()?.nativeElement) {
       this.typeInput()!.nativeElement.value = clipped;
     }
 
     this.typedText.set(clipped);
+
+    if (clipped.length > previousLength) {
+      this.sound.speakLetter(clipped[clipped.length - 1]!);
+    }
+
     this.evaluateIfComplete();
   }
 
   onTypeKeydown(event: KeyboardEvent): void {
     if (this.answerStatus() === 'correct') {
       event.preventDefault();
+      return;
+    }
+
+    if (event.key.length !== 1 || event.ctrlKey || event.metaKey || event.altKey) {
+      return;
+    }
+
+    if (this.typedText().length >= this.expectedLetters().length) {
+      return;
     }
   }
 

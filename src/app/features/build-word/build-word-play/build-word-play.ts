@@ -28,6 +28,7 @@ import {
   getBlockDropListIds,
   isSlotLetterCorrect,
   isSlotLetterWrong,
+  isWordBlockComplete,
   LetterTile,
   parseContainerId,
   slotId,
@@ -350,6 +351,12 @@ export class BuildWordPlay {
     }
 
     block.slotDropData[slotIndex] = [tile];
+    this.sound.speakLetter(tile.letter);
+
+    if (isWordBlockComplete(block)) {
+      this.sound.speakWord(block.word, { interrupt: false });
+    }
+
     this.bumpLayout();
   }
 

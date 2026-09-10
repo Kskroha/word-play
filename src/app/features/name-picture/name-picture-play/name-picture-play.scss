@@ -1,5 +1,10 @@
 @use '../../../shared/styles/play-shell';
 @use '../../../shared/styles/play-picture';
+@use '../../../shared/styles/mic-button';
+
+:host .play-page:not(.play-page--empty):not(.play-page--completed) {
+  padding-bottom: calc(clamp(0.75rem, 2dvh, 1.25rem) + 4.75rem);
+}
 
 .play-prompt--instruction {
   font-size: clamp(1.25rem, 4vw, 1.65rem);
@@ -30,48 +35,6 @@
   align-items: center;
   gap: 0.75rem;
   width: min(100%, 24rem);
-}
-
-.name-picture-mic {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  min-height: clamp(64px, 10dvh, 76px);
-  min-width: min(100%, 16rem);
-  padding: 0.85rem 1.35rem;
-  border: 2.5px solid #b8e6c8;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffffff 0%, #f5fbf7 100%);
-  color: #3d7a58;
-  font-family: var(--wp-font);
-  font-size: clamp(1.1rem, 3.5vw, 1.35rem);
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(123, 200, 154, 0.18);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    cursor: default;
-  }
-
-  &--listening {
-    border-color: var(--wp-success);
-    box-shadow: 0 0 0 4px rgba(123, 200, 154, 0.18);
-    animation: name-picture-pulse 1.2s ease-in-out infinite;
-  }
-}
-
-.name-picture-mic__icon {
-  font-size: 1.45rem;
-  line-height: 1;
 }
 
 .name-picture-heard,
@@ -120,17 +83,6 @@
   min-height: 52px !important;
 }
 
-@keyframes name-picture-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.02);
-  }
-}
-
 @media (max-width: 1024px) {
   .play-page {
     --play-visual-height: 160px;
@@ -143,9 +95,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .name-picture-mic {
-    transition: none;
-    animation: none !important;
-  }
-}

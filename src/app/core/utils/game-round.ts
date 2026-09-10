@@ -24,12 +24,25 @@ export interface TrueFalseRound {
   isMatch: boolean;
 }
 
+export function createBalancedMatchSequence(roundCount: number): boolean[] {
+  if (roundCount <= 0) {
+    return [];
+  }
+
+  const matchCount = Math.floor(roundCount / 2);
+  const sequence = [
+    ...Array.from({ length: matchCount }, () => true),
+    ...Array.from({ length: roundCount - matchCount }, () => false),
+  ];
+
+  return shuffle(sequence);
+}
+
 export function createTrueFalseRound(
   promptItem: CategoryItem,
   pool: CategoryItem[],
+  isMatch = Math.random() < 0.5,
 ): TrueFalseRound {
-  const isMatch = Math.random() < 0.5;
-
   if (isMatch) {
     return {
       wordItem: promptItem,

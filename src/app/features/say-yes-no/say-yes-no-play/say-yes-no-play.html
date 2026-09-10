@@ -8,7 +8,7 @@
     <div class="completion-card">
       <span class="completion-card__emoji" aria-hidden="true">🎉</span>
       <h1 class="wp-display-title wp-display-title--md">Молодец!</h1>
-      <p class="wp-display-subtitle">Ты назвал все картинки в теме «{{ category()!.title }}».</p>
+      <p class="wp-display-subtitle">Ты ответил на все задания в теме «{{ category()!.title }}».</p>
       <div class="completion-card__actions">
         <button mat-flat-button type="button" (click)="restartCategory()">
           Пройти ещё раз
@@ -18,7 +18,7 @@
       </div>
     </div>
   </div>
-} @else if (currentItem(); as item) {
+} @else if (round(); as currentRound) {
   <div class="play-page">
     <header class="play-header">
       <button mat-stroked-button type="button" class="play-header__back" (click)="goBackToCategories()">
@@ -43,7 +43,7 @@
     </header>
 
     <div class="play-main">
-      <p class="play-prompt play-prompt--instruction">Посмотри на картинку и назови, что это</p>
+      <p class="play-prompt">{{ currentRound.wordItem.label }}</p>
 
       <div class="play-picture">
         <div class="play-picture__frame">
@@ -52,11 +52,11 @@
               <img
                 class="play-picture__image"
                 [src]="currentPictureUrl()"
-                alt="Картинка задания"
+                [alt]="currentRound.pictureItem.label"
                 (error)="onPictureError()"
               />
             } @else {
-              <span class="play-picture__emoji" aria-hidden="true">{{ item.imageEmoji }}</span>
+              <span class="play-picture__emoji" aria-hidden="true">{{ currentRound.pictureItem.imageEmoji }}</span>
             }
           </div>
         </div>
@@ -77,48 +77,24 @@
         }
       </div>
 
-      @if (answerStatus() === 'correct') {
-        <p class="name-picture-word" role="status" aria-live="polite">{{ item.label }}</p>
-      }
-
-      @if (answerStatus() !== 'correct') {
-        <div class="name-picture-controls">
-          @if (speechSupported()) {
-            @if (heardText()) {
-              <p class="name-picture-heard">Я слышу: «{{ heardText() }}»</p>
-            }
-          } @else {
-            <p class="name-picture-fallback-note">
-              В этом браузере нет распознавания речи. Можно ввести слово вручную.
-            </p>
-            <div class="name-picture-fallback">
-              <input
-                class="name-picture-fallback__input"
-                type="text"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                inputmode="text"
-                [value]="typedFallback()"
-                (input)="onTypedFallbackInput($event)"
-                aria-label="Введи слово вручную"
-              />
-              <button
-                mat-flat-button
-                type="button"
-                class="name-picture-fallback__button"
-                (click)="submitTypedAnswer()"
-              >
-                Проверить
-              </button>
-            </div>
-          }
-
-          @if (speechError()) {
-            <p class="name-picture-error" role="alert">{{ speechError() }}</p>
-          }
+      <div class="say-yes-no-hint-actions" aria-live="polite">
+        <div
+          class="say-yes-no-hint-btn say-yes-no-hint-btn--yes"
+          [class.say-yes-no-hint-btn--selected]="isHintSelected(true)"
+          [class.say-yes-no-hint-btn--correct]="isAnswerCorrect(true)"
+          [class.say-yes-no-hint-btn--wrong]="isAnswerWrong(true)"
+        >
+          Да
         </div>
-      }
+        <div
+          class="say-yes-no-hint-btn say-yes-no-hint-btn--no"
+          [class.say-yes-no-hint-btn--selected]="isHintSelected(false)"
+          [class.say-yes-no-hint-btn--correct]="isAnswerCorrect(false)"
+          [class.say-yes-no-hint-btn--wrong]="isAnswerWrong(false)"
+        >
+          Нет
+        </div>
+      </div>
 
       @if (answerStatus() === 'incorrect') {
         <p class="feedback feedback--error" role="alert">💪 Почти получилось! Попробуй ещё раз</p>
@@ -128,17 +104,18 @@
         <p class="feedback feedback--success" role="status">🌟 Здорово! Всё верно!</p>
       }
 
-      @if (answerStatus() === 'correct') {
-        <div class="play-actions">
-          <button
-            mat-flat-button
-            type="button"
-            class="play-actions__button play-actions__button--success"
-            (click)="nextTask()"
-          >
-            Дальше →
-          </button>
-        </div>
+      @if (answerStatus() !== 'correct' && heardText()) {
+        <p class="say-yes-no-heard">Я слышу: «{{ heardText() }}»</p>
+      }
+
+      @if (answerStatus() !== 'correct' && speechError()) {
+        <p class="say-yes-no-error" role="alert">{{ speechError() }}</p>
+      }
+
+      @if (answerStatus() !== 'correct' && !speechSupported()) {
+        <p class="say-yes-no-fallback-note" role="alert">
+          Эта игра работает только голосом. Открой её в Chrome или Safari и разреши доступ к микрофону.
+        </p>
       }
     </div>
 
@@ -149,7 +126,7 @@
           class="play-mic-record"
           [class.play-mic-record--listening]="isListening()"
           [disabled]="isListening()"
-          [attr.aria-label]="isListening() ? 'Слушаю' : 'Скажи вслух'"
+          [attr.aria-label]="isListening() ? 'Слушаю' : 'Скажи «да» или «нет»'"
           (click)="startListening()"
         >
           <img
@@ -160,9 +137,5 @@
         </button>
       </div>
     }
-
-    <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
-      Пропустить
-    </button>
   </div>
 }

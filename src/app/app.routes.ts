@@ -35,20 +35,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'name-picture',
-    loadComponent: () =>
-      import('./features/name-picture/theme-select/theme-select').then(
-        (m) => m.NamePictureThemeSelect,
-      ),
-  },
-  {
-    path: 'name-picture/:categoryId',
-    loadComponent: () =>
-      import('./features/name-picture/name-picture-play/name-picture-play').then(
-        (m) => m.NamePicturePlay,
-      ),
-  },
-  {
     path: 'vocabulary',
     loadComponent: () =>
       import('./features/vocabulary/theme-select/theme-select').then(
@@ -87,6 +73,37 @@ export const routes: Routes = [
       import('./features/type-word/type-word-play/type-word-play').then(
         (m) => m.TypeWordPlay,
       ),
+  },
+  {
+    path: 'vocabulary/:categoryId/name-picture',
+    loadComponent: () =>
+      import('./features/name-picture/name-picture-play/name-picture-play').then(
+        (m) => m.NamePicturePlay,
+      ),
+  },
+  {
+    path: 'vocabulary/:categoryId/say-yes-no',
+    loadComponent: () =>
+      import('./features/say-yes-no/say-yes-no-play/say-yes-no-play').then(
+        (m) => m.SayYesNoPlay,
+      ),
+  },
+  {
+    path: 'name-picture',
+    redirectTo: 'vocabulary',
+    pathMatch: 'full',
+  },
+  {
+    path: 'name-picture/:categoryId',
+    redirectTo: 'vocabulary/:categoryId/name-picture',
+  },
+  {
+    path: 'categories/:categoryId/name-picture',
+    redirectTo: 'vocabulary/:categoryId/name-picture',
+  },
+  {
+    path: 'categories/:categoryId/say-yes-no',
+    redirectTo: 'vocabulary/:categoryId/say-yes-no',
   },
   {
     path: 'parent',

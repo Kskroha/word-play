@@ -1,0 +1,1 @@
+var t=[{id:`letters`,title:`Буквы`,description:`Учимся узнавать, закрашивать и писать буквы`,emoji:`🔤`,route:[`/letters`]},{id:`vocabulary`,title:`Слова по темам`,description:`Животные, еда, транспорт и другие темы`,emoji:`📚`,route:[`/vocabulary`]}];var e=[`/categories`];export{t as n,e as t};

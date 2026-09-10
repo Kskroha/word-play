@@ -2,9 +2,7 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { CATEGORIES, getCategoryRoute } from '../../../core/data/categories';
-import { CategoryId } from '../../../core/models/category.model';
-import { getCategoryImageUrl, hasCategoryImage } from '../../../core/utils/category-images';
+import { APP_SECTIONS } from '../../../core/data/sections';
 import { PageShell } from '../../../shared/ui/page-shell/page-shell';
 
 @Component({
@@ -14,9 +12,5 @@ import { PageShell } from '../../../shared/ui/page-shell/page-shell';
   styleUrl: './category-select.scss',
 })
 export class CategorySelect {
-  readonly categories = CATEGORIES;
-  readonly categoryImageUrl = getCategoryImageUrl;
-  readonly categoryRoute = (categoryId: CategoryId) => getCategoryRoute(categoryId);
-  readonly isTitleOnlyCategory = (categoryId: CategoryId) =>
-    categoryId !== 'letters' && !hasCategoryImage(categoryId);
+  readonly sections = APP_SECTIONS;
 }

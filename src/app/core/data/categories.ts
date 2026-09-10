@@ -283,6 +283,11 @@ export const CATEGORIES: Category[] = [
   },
 ];
 
+export const WORD_CATEGORIES = CATEGORIES.filter(
+  (category): category is Category & { id: Exclude<CategoryId, 'letters'> } =>
+    category.id !== 'letters',
+);
+
 export function getCategoryById(id: CategoryId): Category | undefined {
   return CATEGORIES.find((category) => category.id === id);
 }
@@ -295,10 +300,17 @@ export function isWordCategoryId(value: string): value is Exclude<CategoryId, 'l
   return isCategoryId(value) && value !== 'letters';
 }
 
+export function getVocabularyThemeRoute(
+  categoryId: Exclude<CategoryId, 'letters'>,
+): string[] {
+  return ['/vocabulary', categoryId];
+}
+
+/** @deprecated Use section routes: `/letters` or `/vocabulary/:id`. */
 export function getCategoryRoute(categoryId: CategoryId): string[] {
   if (categoryId === 'letters') {
-    return ['/categories', 'letters'];
+    return ['/letters'];
   }
 
-  return ['/categories', categoryId];
+  return getVocabularyThemeRoute(categoryId);
 }

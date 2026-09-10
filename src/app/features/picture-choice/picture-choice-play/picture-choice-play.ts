@@ -8,6 +8,7 @@ import { getCategoryById, isCategoryId } from '../../../core/data/categories';
 import { CategoryItem } from '../../../core/models/category.model';
 import { PictureMode, PICTURE_MODE_LABELS } from '../../../core/models/game-settings.model';
 import { GameSettingsService } from '../../../core/services/game-settings.service';
+import { SoundService } from '../../../core/services/sound.service';
 import {
   getAvailablePictureModes,
   getCategoryItemPictureUrl,
@@ -26,6 +27,7 @@ export class PictureChoicePlay {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly settingsService = inject(GameSettingsService);
+  private readonly sound = inject(SoundService);
 
   readonly pictureModeLabels = PICTURE_MODE_LABELS;
 
@@ -133,10 +135,12 @@ export class PictureChoicePlay {
 
     if (choice.id === item.id) {
       this.answerStatus.set('correct');
+      this.sound.playCorrect();
       return;
     }
 
     this.answerStatus.set('incorrect');
+    this.sound.playIncorrect();
   }
 
   nextTask(): void {
@@ -163,11 +167,11 @@ export class PictureChoicePlay {
   goBackToCategories(): void {
     const category = this.category();
     if (!category) {
-      void this.router.navigate(['/categories']);
+      void this.router.navigate(['/vocabulary']);
       return;
     }
 
-    void this.router.navigate(['/categories', category.id]);
+    void this.router.navigate(['/vocabulary', category.id]);
   }
 
   setPictureMode(mode: PictureMode | null): void {

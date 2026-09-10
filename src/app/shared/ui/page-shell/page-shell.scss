@@ -6,6 +6,10 @@
 }
 
 .back-link {
+  display: inline-flex !important;
+  align-self: flex-start;
+  width: auto !important;
+  flex-shrink: 0;
   margin-bottom: 0.75rem;
   border: var(--wp-dashed) !important;
   border-radius: 999px !important;

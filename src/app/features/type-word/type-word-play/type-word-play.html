@@ -1,7 +1,7 @@
 @if (!category()) {
   <div class="play-page play-page--empty">
     <p>Категория не найдена.</p>
-    <a mat-flat-button [routerLink]="['/categories']">К выбору категории</a>
+    <a mat-flat-button [routerLink]="['/vocabulary']">К выбору темы</a>
   </div>
 } @else if (isCompleted()) {
   <div class="play-page play-page--completed">
@@ -13,8 +13,8 @@
         <button mat-flat-button type="button" (click)="restartCategory()">
           Пройти ещё раз
         </button>
-        <a mat-stroked-button routerLink="/categories">Другая категория</a>
-        <a mat-button [routerLink]="['/categories', category()!.id]">К играм</a>
+        <a mat-stroked-button routerLink="/vocabulary">Другая тема</a>
+        <a mat-button [routerLink]="['/vocabulary', category()!.id]">К играм</a>
       </div>
     </div>
   </div>
@@ -78,6 +78,7 @@
       <section class="type-workspace" aria-label="Набери слово на клавиатуре">
         <div
           class="type-slots"
+          appTileScrollRow
           [class.type-slots--incorrect]="answerStatus() === 'incorrect'"
           [class.type-slots--correct]="answerStatus() === 'correct'"
           (click)="focusInput()"

@@ -14,10 +14,12 @@ import { getCategoryById, isCategoryId } from '../../../core/data/categories';
 import { CategoryItem } from '../../../core/models/category.model';
 import { PictureMode, PICTURE_MODE_LABELS } from '../../../core/models/game-settings.model';
 import { GameSettingsService } from '../../../core/services/game-settings.service';
+import { SoundService } from '../../../core/services/sound.service';
 import {
   getAvailablePictureModes,
   getCategoryItemPictureUrl,
 } from '../../../core/utils/category-image';
+import { TileScrollRowDirective } from '../../../shared/directives/tile-scroll-row.directive';
 import {
   areAllBlocksCorrect,
   areAllBlocksFilled,
@@ -36,13 +38,21 @@ type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
 @Component({
   selector: 'app-build-word-play',
-  imports: [RouterLink, MatButtonModule, MatButtonToggleModule, CdkDropList, CdkDrag],
+  imports: [
+    RouterLink,
+    MatButtonModule,
+    MatButtonToggleModule,
+    CdkDropList,
+    CdkDrag,
+    TileScrollRowDirective,
+  ],
   templateUrl: './build-word-play.html',
   styleUrl: './build-word-play.scss',
 })
 export class BuildWordPlay {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly sound = inject(SoundService);
   private readonly settingsService = inject(GameSettingsService);
 
   readonly pictureModeLabels = PICTURE_MODE_LABELS;
@@ -234,11 +244,11 @@ export class BuildWordPlay {
   goBackToCategories(): void {
     const category = this.category();
     if (!category) {
-      void this.router.navigate(['/categories']);
+      void this.router.navigate(['/vocabulary']);
       return;
     }
 
-    void this.router.navigate(['/categories', category.id]);
+    void this.router.navigate(['/vocabulary', category.id]);
   }
 
   toggleHint(): void {
@@ -303,7 +313,14 @@ export class BuildWordPlay {
       return;
     }
 
-    this.answerStatus.set(areAllBlocksCorrect(this.wordBlocks) ? 'correct' : 'incorrect');
+    if (areAllBlocksCorrect(this.wordBlocks)) {
+      this.answerStatus.set('correct');
+      this.sound.playCorrect();
+      return;
+    }
+
+    this.answerStatus.set('incorrect');
+    this.sound.playIncorrect();
   }
 
   private placeTileInSlot(

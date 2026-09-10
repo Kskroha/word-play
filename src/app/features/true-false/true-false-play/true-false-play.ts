@@ -7,6 +7,7 @@ import { map } from 'rxjs';
 import { getCategoryById, isCategoryId } from '../../../core/data/categories';
 import { PictureMode, PICTURE_MODE_LABELS } from '../../../core/models/game-settings.model';
 import { GameSettingsService } from '../../../core/services/game-settings.service';
+import { SoundService } from '../../../core/services/sound.service';
 import {
   getAvailablePictureModes,
   getCategoryItemPictureUrl,
@@ -26,6 +27,7 @@ export class TrueFalsePlay {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly settingsService = inject(GameSettingsService);
+  private readonly sound = inject(SoundService);
 
   readonly pictureModeLabels = PICTURE_MODE_LABELS;
 
@@ -124,10 +126,12 @@ export class TrueFalsePlay {
 
     if (userSaysMatch === round.isMatch) {
       this.answerStatus.set('correct');
+      this.sound.playCorrect();
       return;
     }
 
     this.answerStatus.set('incorrect');
+    this.sound.playIncorrect();
   }
 
   nextTask(): void {
@@ -154,11 +158,11 @@ export class TrueFalsePlay {
   goBackToCategories(): void {
     const category = this.category();
     if (!category) {
-      void this.router.navigate(['/categories']);
+      void this.router.navigate(['/vocabulary']);
       return;
     }
 
-    void this.router.navigate(['/categories', category.id]);
+    void this.router.navigate(['/vocabulary', category.id]);
   }
 
   setPictureMode(mode: PictureMode | null): void {

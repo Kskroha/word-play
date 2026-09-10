@@ -1,6 +1,11 @@
 @use '../../../shared/styles/play-shell';
 @use '../../../shared/styles/play-picture';
 
+.play-page {
+  --play-tile-size: 80px;
+  --play-tile-font: 2.45rem;
+}
+
 .play-layout {
   flex: 1;
   display: grid;
@@ -10,7 +15,8 @@
   width: 100%;
   margin: 0 auto;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: hidden;
   align-items: center;
 }
 
@@ -26,17 +32,18 @@
   align-items: center;
   justify-content: center;
   gap: var(--play-block-gap);
-  min-height: 0;
-  height: 100%;
+  width: 100%;
   padding: 0.25rem;
 }
 
+// Как .answer-slots / .answer-slot в «Собери слово».
 .type-slots {
+  @include play-shell.play-tile-scroll-row;
+
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
   gap: 0.5rem;
-  width: 100%;
+  margin: 0 auto;
   cursor: text;
 }
 
@@ -44,8 +51,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: none;
+  box-sizing: border-box;
   width: var(--play-tile-size);
   height: var(--play-tile-size);
+  min-width: var(--play-tile-size);
+  min-height: var(--play-tile-size);
   border: 2.5px dashed var(--wp-border-dashed);
   border-radius: var(--wp-radius-sm);
   background: transparent;
@@ -94,15 +105,69 @@
   border: 0;
 }
 
-@media (max-width: 768px) {
-  .play-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
-    align-items: stretch;
+@media (max-width: 1024px) {
+  .play-page {
+    --play-tile-size: clamp(52px, 10vw, 68px);
+    --play-tile-font: clamp(1.45rem, 4.2vw, 2rem);
+    --play-visual-height: min(28dvh, 200px);
+    --play-visual-width: min(calc(var(--play-visual-height) * 3 / 4), 42vw);
+    --play-block-gap: clamp(0.35rem, 1dvh, 0.75rem);
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: max(0.65rem, env(safe-area-inset-top)) clamp(1rem, 3vw, 1.5rem)
+      calc(4.75rem + env(safe-area-inset-bottom));
   }
 
-  .play-page {
-    --play-visual-height: min(calc(100dvh - 20rem), 280px);
+  .play-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    margin-bottom: clamp(0.35rem, 1dvh, 0.65rem);
+  }
+
+  .play-header__back {
+    position: relative;
+    top: auto;
+    left: auto;
+    align-self: flex-start;
+    z-index: auto;
+    min-height: 42px !important;
+    padding: 0 0.85rem !important;
+    font-size: 0.88rem !important;
+  }
+
+  .play-header__main {
+    gap: 0.4rem;
+    padding: 0;
+    width: 100%;
+  }
+
+  .play-header__category {
+    font-size: clamp(1.35rem, 4vw, 1.85rem);
+  }
+
+  .play-header__progress-track {
+    width: 100%;
+    max-width: none;
+    height: 12px;
+  }
+
+  .play-header__progress-label {
+    font-size: 0.85rem;
+  }
+
+  .play-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: clamp(0.65rem, 1.5dvh, 1rem);
+    flex: none;
+    min-height: auto;
+    overflow: visible;
   }
 
   .play-picture {
@@ -111,15 +176,58 @@
     width: 100%;
   }
 
-  .type-workspace {
-    height: auto;
-    justify-content: center;
+  .play-picture__frame {
+    width: min(var(--play-visual-width), 160px);
+    height: min(var(--play-visual-height), 210px);
+  }
+
+  .type-slots {
+    gap: clamp(0.35rem, 1.2vw, 0.5rem);
+  }
+
+  .play-skip {
+    right: max(0.85rem, env(safe-area-inset-right));
+    bottom: calc(0.65rem + env(safe-area-inset-bottom));
+    min-height: 42px !important;
   }
 }
 
-@media (max-height: 680px) {
+@media (max-width: 768px) {
   .play-page {
-    --play-tile-size: 64px;
-    --play-tile-font: 2rem;
+    --play-tile-size: clamp(48px, 11.5vw, 58px);
+    --play-tile-font: clamp(1.35rem, 4.8vw, 1.85rem);
+    --play-visual-height: min(24dvh, 168px);
+    --play-visual-width: min(calc(var(--play-visual-height) * 3 / 4), 44vw);
+    padding-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .play-picture__frame {
+    width: min(var(--play-visual-width), 140px);
+    height: min(var(--play-visual-height), 186px);
+  }
+}
+
+@media (max-width: 768px) and (max-height: 700px) {
+  .play-page {
+    --play-tile-size: clamp(46px, 10.5vw, 54px);
+    --play-tile-font: clamp(1.25rem, 4.2vw, 1.65rem);
+    --play-visual-height: min(20dvh, 140px);
+  }
+
+  .play-picture__frame {
+    width: min(var(--play-visual-width), 120px);
+    height: min(var(--play-visual-height), 160px);
+  }
+}
+
+@media (max-width: 380px) {
+  .play-page {
+    --play-tile-size: 44px;
+    --play-tile-font: 1.35rem;
+    padding-inline: max(0.5rem, env(safe-area-inset-left)) max(0.5rem, env(safe-area-inset-right));
+  }
+
+  .type-slots {
+    gap: 0.28rem;
   }
 }

@@ -1,13 +1,13 @@
 @if (!category()) {
-  <app-page-shell title="Категория не найдена" [backLink]="['/categories']">
-    <p class="empty-state">Такой категории нет. Выбери другую.</p>
-    <a class="empty-state__link" routerLink="/categories">К выбору категории</a>
+  <app-page-shell title="Тема не найдена" [backLink]="['/vocabulary']">
+    <p class="empty-state">Такой темы нет. Выбери другую.</p>
+    <a class="empty-state__link" routerLink="/vocabulary">К выбору темы</a>
   </app-page-shell>
 } @else {
   <app-page-shell
     [title]="category()!.title"
     subtitle="Выбери игру"
-    [backLink]="['/categories']"
+    [backLink]="['/vocabulary']"
   >
     @if (enabledCount() === 0) {
       <div class="empty-state" role="status">
@@ -20,7 +20,7 @@
           @if (game.enabled) {
             <a
               class="game-choice game-choice--{{ game.id }}"
-              [routerLink]="['/categories', category()!.id, game.id]"
+              [routerLink]="['/vocabulary', category()!.id, game.id]"
             >
               <h2 class="game-choice__title">{{ game.title }}</h2>
               <div class="game-choice__art">

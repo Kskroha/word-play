@@ -17,6 +17,7 @@ import { getCategoryById, isCategoryId } from '../../../core/data/categories';
 import { CategoryItem } from '../../../core/models/category.model';
 import { PictureMode, PICTURE_MODE_LABELS } from '../../../core/models/game-settings.model';
 import { GameSettingsService } from '../../../core/services/game-settings.service';
+import { SoundService } from '../../../core/services/sound.service';
 import {
   getAvailablePictureModes,
   getCategoryItemPictureUrl,
@@ -26,13 +27,14 @@ import {
   isTypedAnswerCorrect,
   isTypedLetterCorrect,
 } from '../../../core/utils/game-round';
+import { TileScrollRowDirective } from '../../../shared/directives/tile-scroll-row.directive';
 import { normalizeWord, splitAnswerIntoLetters } from '../../../core/utils/word-builder';
 
 type AnswerStatus = 'idle' | 'correct' | 'incorrect';
 
 @Component({
   selector: 'app-type-word-play',
-  imports: [RouterLink, MatButtonModule, MatButtonToggleModule],
+  imports: [RouterLink, MatButtonModule, MatButtonToggleModule, TileScrollRowDirective],
   templateUrl: './type-word-play.html',
   styleUrl: './type-word-play.scss',
 })
@@ -40,6 +42,7 @@ export class TypeWordPlay {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly settingsService = inject(GameSettingsService);
+  private readonly sound = inject(SoundService);
 
   readonly pictureModeLabels = PICTURE_MODE_LABELS;
 
@@ -235,11 +238,11 @@ export class TypeWordPlay {
   goBackToCategories(): void {
     const category = this.category();
     if (!category) {
-      void this.router.navigate(['/categories']);
+      void this.router.navigate(['/vocabulary']);
       return;
     }
 
-    void this.router.navigate(['/categories', category.id]);
+    void this.router.navigate(['/vocabulary', category.id]);
   }
 
   setPictureMode(mode: PictureMode | null): void {
@@ -282,6 +285,13 @@ export class TypeWordPlay {
     }
 
     const answer = this.currentAnswer();
-    this.answerStatus.set(isTypedAnswerCorrect(typed, answer) ? 'correct' : 'incorrect');
+    if (isTypedAnswerCorrect(typed, answer)) {
+      this.answerStatus.set('correct');
+      this.sound.playCorrect();
+      return;
+    }
+
+    this.answerStatus.set('incorrect');
+    this.sound.playIncorrect();
   }
 }

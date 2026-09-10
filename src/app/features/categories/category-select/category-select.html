@@ -1,5 +1,5 @@
 <a
-  class="category-settings"
+  class="home-settings"
   routerLink="/parent"
   mat-icon-button
   aria-label="Настройки для родителя"
@@ -8,37 +8,15 @@
 </a>
 
 <app-page-shell title="Что будем изучать?" [showBack]="false">
-  <div class="category-list">
-    @for (category of categories; track category.id) {
+  <div class="section-list">
+    @for (section of sections; track section.id) {
       <a
-        class="category-choice category-choice--{{ category.id }}"
-        [class.category-choice--title-only]="isTitleOnlyCategory(category.id)"
-        [routerLink]="categoryRoute(category.id)"
+        class="section-choice section-choice--{{ section.id }}"
+        [routerLink]="section.route"
       >
-        @if (isTitleOnlyCategory(category.id)) {
-          <span class="category-choice__title">{{ category.title }}</span>
-        } @else {
-          <span class="category-choice__badge">
-            <span class="category-choice__title">{{ category.title }}</span>
-          </span>
-          <div class="category-choice__art">
-            @if (categoryImageUrl(category.id); as imageUrl) {
-              <img
-                class="category-choice__image"
-                [src]="imageUrl"
-                [alt]="category.title"
-                loading="lazy"
-                decoding="async"
-              />
-            } @else {
-              <div class="category-choice__placeholder" aria-hidden="true">
-                <span class="category-choice__sample-letter">А</span>
-                <span class="category-choice__sample-letter">Б</span>
-                <span class="category-choice__sample-letter">В</span>
-              </div>
-            }
-          </div>
-        }
+        <span class="section-choice__emoji" aria-hidden="true">{{ section.emoji }}</span>
+        <span class="section-choice__title">{{ section.title }}</span>
+        <span class="section-choice__description">{{ section.description }}</span>
       </a>
     }
   </div>

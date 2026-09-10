@@ -21,6 +21,7 @@ import {
   LetterTraceRound,
   TRACE_BRUSH_COLORS,
 } from '../../../core/utils/letter-trace';
+import { SoundService } from '../../../core/services/sound.service';
 import { LetterTracePad } from '../../../core/utils/letter-trace-pad';
 
 @Component({
@@ -32,6 +33,7 @@ import { LetterTracePad } from '../../../core/utils/letter-trace-pad';
 export class TraceLetterPlay implements OnDestroy {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly sound = inject(SoundService);
 
   private readonly guideCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('guideCanvas');
   private readonly paintCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('paintCanvas');
@@ -41,12 +43,19 @@ export class TraceLetterPlay implements OnDestroy {
   private resizeObserver: ResizeObserver | null = null;
   private isPointerActive = false;
   private successCheckQueued = false;
+  private autoAdvanceTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private transitionTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  private static readonly SUCCESS_ADVANCE_MS = 750;
+  private static readonly TRANSITION_OUT_MS = 260;
+  private static readonly TRANSITION_IN_MS = 320;
 
   readonly brushColors = TRACE_BRUSH_COLORS;
   readonly alphabetOptions = LETTER_ALPHABET_OPTIONS;
   readonly selectedColorId = signal(TRACE_BRUSH_COLORS[0]!.id);
   readonly alphabet = signal<LetterAlphabetId>('ru');
   readonly roundComplete = signal(false);
+  readonly padTransition = signal<'idle' | 'out' | 'in'>('idle');
 
   readonly category = computed(() => getCategoryById('letters'));
 
@@ -69,6 +78,8 @@ export class TraceLetterPlay implements OnDestroy {
     effect(() => {
       const alphabet = this.alphabet();
       untracked(() => {
+        this.clearTransition();
+        this.padTransition.set('idle');
         this.currentIndex.set(0);
         this.isCompleted.set(false);
         this.rounds.set(getLetterTraceRoundsForAlphabet(alphabet));
@@ -104,6 +115,8 @@ export class TraceLetterPlay implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearAutoAdvance();
+    this.clearTransition();
     this.releasePad();
   }
 
@@ -149,7 +162,7 @@ export class TraceLetterPlay implements OnDestroy {
   }
 
   onPointerDown(event: PointerEvent): void {
-    if (this.roundComplete()) {
+    if (this.roundComplete() || this.padTransition() !== 'idle') {
       return;
     }
 
@@ -161,7 +174,7 @@ export class TraceLetterPlay implements OnDestroy {
   }
 
   onPointerMove(event: PointerEvent): void {
-    if (this.roundComplete() || !this.isPointerActive) {
+    if (this.roundComplete() || this.padTransition() !== 'idle' || !this.isPointerActive) {
       return;
     }
 
@@ -213,33 +226,33 @@ export class TraceLetterPlay implements OnDestroy {
   }
 
   goToLetter(index: number): void {
-    this.isPointerActive = false;
-    this.isCompleted.set(false);
-    this.currentIndex.set(index);
-  }
+    this.clearAutoAdvance();
 
-  nextTask(): void {
-    const total = this.rounds().length;
-    const nextIndex = this.currentIndex() + 1;
-
-    if (nextIndex >= total) {
-      this.isCompleted.set(true);
+    if (index === this.currentIndex()) {
       return;
     }
 
-    this.currentIndex.set(nextIndex);
+    this.transitionToIndex(index);
+  }
+
+  nextTask(): void {
+    this.clearAutoAdvance();
+    this.transitionToIndex(this.currentIndex() + 1);
   }
 
   restartCategory(): void {
+    this.clearTransition();
+    this.padTransition.set('idle');
     this.currentIndex.set(0);
     this.isCompleted.set(false);
   }
 
   goBackToLetterGames(): void {
-    void this.router.navigate(['/categories', 'letters']);
+    void this.router.navigate(['/letters']);
   }
 
   private setupRound(round: LetterTraceRound): void {
+    this.clearAutoAdvance();
     this.isPointerActive = false;
     this.roundComplete.set(false);
     this.pad?.setLetter(round.letter, round.guideColor);
@@ -295,5 +308,79 @@ export class TraceLetterPlay implements OnDestroy {
 
     this.pad.setCelebrating(true);
     this.roundComplete.set(true);
+    this.sound.playCorrect();
+    this.scheduleAutoAdvance();
+  }
+
+  private scheduleAutoAdvance(): void {
+    this.clearAutoAdvance();
+    this.autoAdvanceTimeoutId = setTimeout(() => {
+      this.autoAdvanceTimeoutId = null;
+      this.nextTask();
+    }, TraceLetterPlay.SUCCESS_ADVANCE_MS);
+  }
+
+  private clearAutoAdvance(): void {
+    if (this.autoAdvanceTimeoutId == null) {
+      return;
+    }
+
+    clearTimeout(this.autoAdvanceTimeoutId);
+    this.autoAdvanceTimeoutId = null;
+  }
+
+  private transitionToIndex(index: number): void {
+    this.clearTransition();
+
+    if (this.prefersReducedMotion()) {
+      this.applyIndex(index);
+      return;
+    }
+
+    this.padTransition.set('out');
+    this.transitionTimeoutId = setTimeout(() => {
+      this.transitionTimeoutId = null;
+      this.applyIndex(index);
+
+      if (this.isCompleted()) {
+        this.padTransition.set('idle');
+        return;
+      }
+
+      this.padTransition.set('in');
+      this.transitionTimeoutId = setTimeout(() => {
+        this.transitionTimeoutId = null;
+
+        if (this.padTransition() === 'in') {
+          this.padTransition.set('idle');
+        }
+      }, TraceLetterPlay.TRANSITION_IN_MS);
+    }, TraceLetterPlay.TRANSITION_OUT_MS);
+  }
+
+  private applyIndex(index: number): void {
+    const total = this.rounds().length;
+
+    if (index >= total) {
+      this.isCompleted.set(true);
+      return;
+    }
+
+    this.isPointerActive = false;
+    this.isCompleted.set(false);
+    this.currentIndex.set(index);
+  }
+
+  private clearTransition(): void {
+    if (this.transitionTimeoutId == null) {
+      return;
+    }
+
+    clearTimeout(this.transitionTimeoutId);
+    this.transitionTimeoutId = null;
+  }
+
+  private prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 }

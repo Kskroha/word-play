@@ -1,0 +1,111 @@
+:host ::ng-deep .page-shell {
+  width: 100%;
+  max-width: 960px;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: clamp(0.5rem, 1.2dvh, 0.85rem) clamp(0.75rem, 3vw, 1.25rem)
+    clamp(0.5rem, 1.2dvh, 0.85rem);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+:host ::ng-deep .back-link {
+  align-self: flex-start;
+  width: auto !important;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .page-shell__content {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.theme-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.65rem, 1.5vw, 1rem);
+  width: 100%;
+  margin: clamp(0.75rem, 2dvh, 1.25rem) 0 0.85rem;
+  padding: 0;
+}
+
+.theme-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 1.2dvh, 0.55rem);
+  aspect-ratio: 1;
+  padding: clamp(0.75rem, 2dvh, 1rem);
+  border: 2.5px solid #a8d4ea;
+  border-radius: var(--wp-radius-xl);
+  background: linear-gradient(135deg, #ffffff 0%, #f7fbfe 100%);
+  text-decoration: none;
+  text-align: center;
+  box-shadow:
+    0 4px 14px rgba(74, 69, 96, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 20px rgba(74, 69, 96, 0.11),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.theme-choice__emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.25rem, 5vw, 3rem);
+  height: clamp(2.25rem, 5vw, 3rem);
+  border-radius: var(--wp-radius-md);
+  background: #e8f4fb;
+  font-size: clamp(1.25rem, 2.8vw, 1.65rem);
+  line-height: 1;
+}
+
+.theme-choice__title {
+  font-size: clamp(0.72rem, 1.6vw, 0.88rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #6eb8dc;
+}
+
+@media (max-width: 768px) {
+  .theme-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .theme-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .theme-choice__title {
+    font-size: clamp(0.74rem, 3vw, 0.85rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-choice {
+    transition: none;
+  }
+}

@@ -1,7 +1,7 @@
 @if (!category()) {
   <div class="play-page play-page--empty">
     <p>Категория не найдена.</p>
-    <a mat-flat-button [routerLink]="['/categories']">К выбору категории</a>
+    <a mat-flat-button [routerLink]="['/categories']">На главную</a>
   </div>
 } @else if (isCompleted()) {
   <div class="play-page play-page--completed">
@@ -13,13 +13,13 @@
         <button mat-flat-button type="button" (click)="restartCategory()">
           Пройти ещё раз
         </button>
-        <a mat-stroked-button routerLink="/categories/letters">К играм</a>
+        <a mat-stroked-button routerLink="/letters">К играм</a>
       </div>
     </div>
   </div>
 } @else if (currentRound(); as round) {
   <div class="play-page">
-    <header class="play-header">
+    <header class="play-header play-header--minimal">
       <button mat-stroked-button type="button" class="play-header__back" (click)="goBackToLetterGames()">
         ← Назад
       </button>
@@ -39,102 +39,73 @@
           }
         </mat-button-toggle-group>
       </div>
-
-      <div class="play-header__main">
-        <h1 class="play-header__category play-header__category--{{ category()!.id }}">
-          {{ category()!.title }}
-        </h1>
-        <div
-          class="play-header__progress-track"
-          role="progressbar"
-          [attr.aria-valuenow]="progressPercent()"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          <div class="play-header__progress-fill" [style.width.%]="progressPercent()"></div>
-        </div>
-        <span class="play-header__progress-label">{{ progressLabel() }}</span>
-      </div>
     </header>
 
     <div class="trace-main">
       <p class="trace-prompt">Напиши букву</p>
 
-      <div class="trace-pad-wrap">
-        <div
-          class="trace-pad"
-          [class.trace-pad--success]="roundComplete()"
-          aria-label="Область для обведения буквы {{ round.letter }}"
-        >
-          <canvas #guideCanvas class="trace-pad__guide" aria-hidden="true"></canvas>
-          <canvas
-            #paintCanvas
-            class="trace-pad__paint"
-            [class.trace-pad__paint--locked]="roundComplete()"
-            (pointerdown)="onPointerDown($event)"
-            (pointermove)="onPointerMove($event)"
-            (pointerup)="onPointerUp($event)"
-            (pointercancel)="onPointerUp($event)"
-          ></canvas>
-
-          <button
-            type="button"
-            class="trace-letter-picker"
-            [attr.aria-label]="'Выбрать букву. Сейчас: ' + round.letter"
-            [disabled]="roundComplete()"
-            (click)="openLetterPicker()"
-          >
-            <span class="trace-letter-picker__letter" aria-hidden="true">{{ round.letter }}</span>
-          </button>
-        </div>
-      </div>
-
       <div
-        class="trace-tools"
-        role="toolbar"
-        aria-label="Выбор цвета"
-        [class.trace-tools--locked]="roundComplete()"
+        class="trace-stage"
+        [class.trace-stage--out]="padTransition() === 'out'"
+        [class.trace-stage--in]="padTransition() === 'in'"
+        [class.trace-stage--locked]="padTransition() !== 'idle'"
       >
-        @for (color of brushColors; track color.id) {
-          <button
-            type="button"
-            class="trace-color"
-            [class.trace-color--active]="selectedColorId() === color.id"
-            [style.--trace-color]="color.color"
-            [attr.aria-label]="color.label"
-            [attr.aria-pressed]="selectedColorId() === color.id"
-            [disabled]="roundComplete()"
-            (click)="selectColor(color.id)"
-          ></button>
-        }
+        <div class="trace-pad-wrap">
+          <div
+            class="trace-pad"
+            [class.trace-pad--success]="roundComplete()"
+            aria-label="Область для обведения буквы {{ round.letter }}"
+          >
+            <canvas #guideCanvas class="trace-pad__guide" aria-hidden="true"></canvas>
+            <canvas
+              #paintCanvas
+              class="trace-pad__paint"
+              [class.trace-pad__paint--locked]="roundComplete() || padTransition() !== 'idle'"
+              (pointerdown)="onPointerDown($event)"
+              (pointermove)="onPointerMove($event)"
+              (pointerup)="onPointerUp($event)"
+              (pointercancel)="onPointerUp($event)"
+            ></canvas>
 
-        <button
-          mat-stroked-button
-          type="button"
-          class="trace-clear"
-          (click)="clearPad()"
-          [disabled]="!hasPainted() || roundComplete()"
+            <button
+              type="button"
+              class="trace-letter-picker"
+              [attr.aria-label]="'Выбрать букву. Сейчас: ' + round.letter"
+              [disabled]="roundComplete() || padTransition() !== 'idle'"
+              (click)="openLetterPicker()"
+            >
+              <span class="trace-letter-picker__letter" aria-hidden="true">{{ round.letter }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="trace-tools"
+          role="toolbar"
+          aria-label="Выбор цвета"
+          [class.trace-tools--locked]="roundComplete() || padTransition() !== 'idle'"
         >
-          Стереть
-        </button>
-      </div>
+          @for (color of brushColors; track color.id) {
+            <button
+              type="button"
+              class="trace-color"
+              [class.trace-color--active]="selectedColorId() === color.id"
+              [style.--trace-color]="color.color"
+              [attr.aria-label]="color.label"
+              [attr.aria-pressed]="selectedColorId() === color.id"
+              [disabled]="roundComplete() || padTransition() !== 'idle'"
+              (click)="selectColor(color.id)"
+            ></button>
+          }
+        </div>
 
-      <div class="trace-footer">
         @if (roundComplete()) {
           <p class="trace-footer__message" role="status">🌟 Здорово! Всё верно!</p>
-          <button
-            mat-flat-button
-            type="button"
-            class="trace-footer__next"
-            (click)="nextTask()"
-          >
-            Дальше →
-          </button>
         }
       </div>
     </div>
 
-    @if (!roundComplete()) {
+    @if (!roundComplete() && padTransition() === 'idle') {
       <button mat-stroked-button type="button" class="play-skip" (click)="nextTask()">
         Пропустить
       </button>

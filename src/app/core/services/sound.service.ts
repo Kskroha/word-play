@@ -4,7 +4,7 @@ import { GameSettingsService } from './game-settings.service';
 
 const CORRECT_SOUND = 'assets/sounds/correct.wav';
 const INCORRECT_SOUND = 'assets/sounds/incorrect.wav';
-const SPEAK_AFTER_CANCEL_MS = 80;
+const SPEAK_AFTER_CANCEL_MS = 120;
 
 @Injectable({ providedIn: 'root' })
 export class SoundService {
@@ -13,7 +13,7 @@ export class SoundService {
   private incorrectAudio: HTMLAudioElement | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private speakTimer: ReturnType<typeof setTimeout> | null = null;
-  private unlocked = false;
+  private readonly heldUtterances = new Set<SpeechSynthesisUtterance>();
 
   constructor() {
     this.initSpeech();
@@ -66,30 +66,6 @@ export class SoundService {
 
     loadVoices();
     window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-
-    const unlock = () => {
-      this.unlockSpeech();
-      window.removeEventListener('pointerdown', unlock, true);
-      window.removeEventListener('keydown', unlock, true);
-    };
-
-    window.addEventListener('pointerdown', unlock, true);
-    window.addEventListener('keydown', unlock, true);
-  }
-
-  private unlockSpeech(): void {
-    if (this.unlocked || typeof window === 'undefined' || !window.speechSynthesis) {
-      return;
-    }
-
-    this.unlocked = true;
-    window.speechSynthesis.getVoices();
-
-    const warmUp = new SpeechSynthesisUtterance(' ');
-    warmUp.volume = 0;
-    warmUp.rate = 1;
-    warmUp.lang = 'ru-RU';
-    window.speechSynthesis.speak(warmUp);
   }
 
   private speak(
@@ -108,33 +84,7 @@ export class SoundService {
       return;
     }
 
-    this.unlockSpeech();
-
-    const start = () => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ru-RU';
-      utterance.rate = options.rate;
-
-      const voice = this.pickRussianVoice();
-      if (voice) {
-        utterance.voice = voice;
-      }
-
-      const play = () => {
-        window.speechSynthesis.speak(utterance);
-        window.speechSynthesis.resume();
-      };
-
-      const synth = window.speechSynthesis;
-      if (options.interrupt && (synth.speaking || synth.pending)) {
-        synth.cancel();
-        this.clearSpeakTimer();
-        this.speakTimer = setTimeout(play, SPEAK_AFTER_CANCEL_MS);
-        return;
-      }
-
-      play();
-    };
+    const start = () => this.enqueueUtterance(text, options.rate, options.interrupt !== false);
 
     if (options.delayMs && options.delayMs > 0) {
       this.clearSpeakTimer();
@@ -145,7 +95,70 @@ export class SoundService {
     start();
   }
 
-  private pickRussianVoice(): SpeechSynthesisVoice | undefined {
+  private enqueueUtterance(text: string, rate: number, interrupt: boolean): void {
+    const synth = window.speechSynthesis;
+    const utterance = this.createUtterance(text, rate);
+
+    const play = () => {
+      synth.speak(utterance);
+      if (synth.paused) {
+        synth.resume();
+      }
+    };
+
+    if (interrupt && (synth.speaking || synth.pending || synth.paused)) {
+      synth.cancel();
+      this.clearSpeakTimer();
+      this.speakTimer = setTimeout(play, SPEAK_AFTER_CANCEL_MS);
+      return;
+    }
+
+    play();
+  }
+
+  private createUtterance(text: string, rate: number): SpeechSynthesisUtterance {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = rate;
+    utterance.volume = 1;
+    utterance.pitch = 1;
+
+    const voice = this.pickLocalRussianVoice();
+    if (voice) {
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
+    }
+
+    this.heldUtterances.add(utterance);
+    const release = () => this.heldUtterances.delete(utterance);
+    utterance.onend = release;
+    utterance.onerror = (event) => {
+      release();
+      if (event.error === 'interrupted' || event.error === 'canceled') {
+        return;
+      }
+
+      this.retryWithDefaultVoice(text, rate);
+    };
+
+    return utterance;
+  }
+
+  private retryWithDefaultVoice(text: string, rate: number): void {
+    if (!window.speechSynthesis) {
+      return;
+    }
+
+    const fallback = new SpeechSynthesisUtterance(text);
+    fallback.rate = rate;
+    fallback.volume = 1;
+    this.heldUtterances.add(fallback);
+    const release = () => this.heldUtterances.delete(fallback);
+    fallback.addEventListener('end', release);
+    fallback.addEventListener('error', release);
+    window.speechSynthesis.speak(fallback);
+  }
+
+  private pickLocalRussianVoice(): SpeechSynthesisVoice | undefined {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
       return undefined;
     }
@@ -153,10 +166,7 @@ export class SoundService {
     const voices = this.voices.length ? this.voices : window.speechSynthesis.getVoices();
     this.voices = voices;
 
-    return (
-      voices.find((voice) => /^ru\b/i.test(voice.lang) && voice.localService) ??
-      voices.find((voice) => /^ru\b/i.test(voice.lang))
-    );
+    return voices.find((voice) => voice.localService && /^ru\b/i.test(voice.lang));
   }
 
   private clearSpeakTimer(): void {
